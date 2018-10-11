@@ -42,8 +42,9 @@ TARGET_COLUMN = 32
 #import matplotlib
 #matplotlib.use('Agg')
 
-#from pandas import read_table
+from pandas import read_table
 import numpy as np
+from mnist import MNIST
 import matplotlib.pyplot as plt
 
 try:
@@ -54,63 +55,16 @@ except ImportError:
 
 # =====================================================================
 
-def download_data():
-    '''
-    Downloads the data for this script into a pandas DataFrame.
-    '''
+def LoadMNISTImages(folder, testOrTraining):
 
-    # If your data is in an Excel file, install 'xlrd' and use
-    # pandas.read_excel instead of read_table
-    #from pandas import read_excel
-    #frame = read_excel(URL)
+    mndata = MNIST(folder)
 
-    # If your data is in a private Azure blob, install 'azure-storage' and use
-    # BlockBlobService.get_blob_to_path() with read_table() or read_excel()
-    #from azure.storage.blob import BlockBlobService
-    #service = BlockBlobService(ACCOUNT_NAME, ACCOUNT_KEY)
-    #service.get_blob_to_path(container_name, blob_name, 'my_data.csv')
-    #frame = read_table('my_data.csv', ...
+    if (testOrTraining == 'TRAINING'):
+        images, labels = mndata.load_training()
+    else:
+        images, labels = mndata.load_testing()
 
-    frame = read_table(
-        URL,
-        
-        # Uncomment if the file needs to be decompressed
-        #compression='gzip',
-        #compression='bz2',
-
-        # Specify the file encoding
-        # Latin-1 is common for data from US sources
-        encoding='latin-1',
-        #encoding='utf-8',  # UTF-8 is also common
-
-        # Specify the separator in the data
-        sep=',',            # comma separated values
-        #sep='\t',          # tab separated values
-        #sep=' ',           # space separated values
-
-        # Ignore spaces after the separator
-        skipinitialspace=True,
-
-        # Generate row labels from each row number
-        index_col=None,
-        #index_col=0,       # use the first column as row labels
-        #index_col=-1,      # use the last column as row labels
-
-        # Generate column headers row from each column number
-        header=None,
-        #header=0,          # use the first line as headers
-
-        # Use manual headers and skip the first row in the file
-        #header=0,
-        #names=['col1', 'col2', ...],
-    )
-
-    # Return the entire frame
-    #return frame
-
-    # Return a subset of the columns
-    return frame[[156, 157, 158, TARGET_COLUMN]]
-
+    return mndata, images, labels
 
 # =====================================================================
 
@@ -287,17 +241,26 @@ def plot(results):
 
 if __name__ == '__main__':
     # Download the data set from URL
-    print("Downloading data from {}".format(URL))
-    frame = download_data()
+    print("Loading data")
+    mndata, images, labels = LoadMNISTImages('./Data', 'TRAINING')
 
-    # Process data into feature and label arrays
-    print("Processing {} samples with {} attributes".format(len(frame.index), len(frame.columns)))
-    X_train, X_test, y_train, y_test = get_features_and_labels(frame)
+    print("Loading test data")
+    mndata, images_test, labels_test = LoadMNISTImages('./Data', 'TEST')
+    
+    print(mndata.display(images[0]))
+    print(mndata.display(images_test[0]))
 
-    # Evaluate multiple regression learners on the data
-    print("Evaluating regression learners")
-    results = list(evaluate_learner(X_train, X_test, y_train, y_test))
 
-    # Display the results
-    print("Plotting the results")
-    plot(results)
+
+
+    ## Process data into feature and label arrays
+    #print("Processing {} samples with {} attributes".format(len(frame.index), len(frame.columns)))
+    #X_train, X_test, y_train, y_test = get_features_and_labels(frame)
+
+    ## Evaluate multiple regression learners on the data
+    #print("Evaluating regression learners")
+    #results = list(evaluate_learner(X_train, X_test, y_train, y_test))
+
+    ## Display the results
+    #print("Plotting the results")
+    #plot(results)
