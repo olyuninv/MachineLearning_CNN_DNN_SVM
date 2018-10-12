@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "RegressionSVM", "RegressionSVM\RegressionSVM.pyproj", "{7FCF6105-C78C-4AB4-80A3-9E647C02F97B}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "RegressionSVM", "RegressionSVM\RegressionSVM.pyproj", "{A660C2EA-690D-418F-BBC2-5F09E7FCD8D4}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "CNNForDigits", "CNNForDigits\CNNForDigits.pyproj", "{520A9BAF-2D0F-4BD5-B4A4-482CAE40E438}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,12 +17,18 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7FCF6105-C78C-4AB4-80A3-9E647C02F97B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7FCF6105-C78C-4AB4-80A3-9E647C02F97B}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{7FCF6105-C78C-4AB4-80A3-9E647C02F97B}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{7FCF6105-C78C-4AB4-80A3-9E647C02F97B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7FCF6105-C78C-4AB4-80A3-9E647C02F97B}.Release|x64.ActiveCfg = Release|Any CPU
-		{7FCF6105-C78C-4AB4-80A3-9E647C02F97B}.Release|x86.ActiveCfg = Release|Any CPU
+		{A660C2EA-690D-418F-BBC2-5F09E7FCD8D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A660C2EA-690D-418F-BBC2-5F09E7FCD8D4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A660C2EA-690D-418F-BBC2-5F09E7FCD8D4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A660C2EA-690D-418F-BBC2-5F09E7FCD8D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A660C2EA-690D-418F-BBC2-5F09E7FCD8D4}.Release|x64.ActiveCfg = Release|Any CPU
+		{A660C2EA-690D-418F-BBC2-5F09E7FCD8D4}.Release|x86.ActiveCfg = Release|Any CPU
+		{520A9BAF-2D0F-4BD5-B4A4-482CAE40E438}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{520A9BAF-2D0F-4BD5-B4A4-482CAE40E438}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{520A9BAF-2D0F-4BD5-B4A4-482CAE40E438}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{520A9BAF-2D0F-4BD5-B4A4-482CAE40E438}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{520A9BAF-2D0F-4BD5-B4A4-482CAE40E438}.Release|x64.ActiveCfg = Release|Any CPU
+		{520A9BAF-2D0F-4BD5-B4A4-482CAE40E438}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
