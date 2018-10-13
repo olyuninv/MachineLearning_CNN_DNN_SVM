@@ -1,6 +1,6 @@
 # Group Assignment of TCD CS7CS4 (Machine Learning) module. Team 21, Task Question ID: 106
 This is the github repository for the group assignment of Module CS7CS4 (Machine Learning) of Trinity College Dublin. 
-Our team number is 21, our team task question is No.106, Hyper-Parameter Tuning: How strong is the impact on ML performance?
+Our team number is 21, task question is No.106, Hyper-Parameter Tuning: How strong is the impact on ML performance?
 ## Task details: 
 ### Hyper-Parameter Tuning: How strong is the impact on ML performance?
  Machine learning algorithms have hyper parameters than cannot be learned and that need to be optimized (e.g. “k” in k-nearest   neighbour). 
