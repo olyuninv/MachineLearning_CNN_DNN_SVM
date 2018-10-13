@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KernelSVM", "KernelSVM\KernelSVM.vcxproj", "{8978CCFD-E144-41EE-A7E5-EC0B8DBC5077}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "RegressionSVM", "RegressionSVM\RegressionSVM.pyproj", "{A660C2EA-690D-418F-BBC2-5F09E7FCD8D4}"
 EndProject
+<<<<<<< HEAD
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "RegressionSVM", "RegressionSVM\RegressionSVM.pyproj", "{B3027261-8D1B-4770-9D7B-B0216FC1B011}"
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Placeholder_DNN", "Placeholder_DNN\Placeholder_DNN.pyproj", "{084A3D62-61C2-45A9-A2DE-6CD3A966DB2E}"
+=======
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "CNNForDigits", "CNNForDigits\CNNForDigits.pyproj", "{520A9BAF-2D0F-4BD5-B4A4-482CAE40E438}"
+>>>>>>> 51433bda018187898f165e45eab649161f0363d7
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +23,7 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+<<<<<<< HEAD
 		{8978CCFD-E144-41EE-A7E5-EC0B8DBC5077}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{8978CCFD-E144-41EE-A7E5-EC0B8DBC5077}.Debug|x64.ActiveCfg = Debug|x64
 		{8978CCFD-E144-41EE-A7E5-EC0B8DBC5077}.Debug|x64.Build.0 = Debug|x64
@@ -41,6 +46,20 @@ Global
 		{084A3D62-61C2-45A9-A2DE-6CD3A966DB2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{084A3D62-61C2-45A9-A2DE-6CD3A966DB2E}.Release|x64.ActiveCfg = Release|Any CPU
 		{084A3D62-61C2-45A9-A2DE-6CD3A966DB2E}.Release|x86.ActiveCfg = Release|Any CPU
+=======
+		{A660C2EA-690D-418F-BBC2-5F09E7FCD8D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A660C2EA-690D-418F-BBC2-5F09E7FCD8D4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A660C2EA-690D-418F-BBC2-5F09E7FCD8D4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A660C2EA-690D-418F-BBC2-5F09E7FCD8D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A660C2EA-690D-418F-BBC2-5F09E7FCD8D4}.Release|x64.ActiveCfg = Release|Any CPU
+		{A660C2EA-690D-418F-BBC2-5F09E7FCD8D4}.Release|x86.ActiveCfg = Release|Any CPU
+		{520A9BAF-2D0F-4BD5-B4A4-482CAE40E438}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{520A9BAF-2D0F-4BD5-B4A4-482CAE40E438}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{520A9BAF-2D0F-4BD5-B4A4-482CAE40E438}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{520A9BAF-2D0F-4BD5-B4A4-482CAE40E438}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{520A9BAF-2D0F-4BD5-B4A4-482CAE40E438}.Release|x64.ActiveCfg = Release|Any CPU
+		{520A9BAF-2D0F-4BD5-B4A4-482CAE40E438}.Release|x86.ActiveCfg = Release|Any CPU
+>>>>>>> 51433bda018187898f165e45eab649161f0363d7
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
