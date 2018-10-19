@@ -19,6 +19,31 @@ def LoadMNISTImages(folder, testOrTraining):
 
     return mndata, images, labels
 
+def TrainModel(Xtrain, ytrain, number_of_hidden_layers, number_of_epochs):
+    model = keras.Sequential([
+        keras.layers.Flatten(input_shape=(28, 28)),
+        keras.layers.Dense(number_of_hidden_layers, activation=tf.nn.relu),
+        keras.layers.Dense(10, activation=tf.nn.softmax)
+    ])
+
+    model.compile(optimizer=tf.train.AdamOptimizer(), 
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+    model.fit(Xtrain, ytrain, epochs=number_of_epochs)   
+
+    return model
+
+def plotGridResults(n_epochs, n_hiddenlayers, accuracy):
+    accuracy = np.array(accuracy)
+    accuracy=accuracy.reshape(len(n_epochs), len(n_hiddenlayers))
+    fig2, ax2 = plt.subplots(figsize=(12,8))
+    c=ax2.contourf(n_epochs,n_hiddenlayers,accuracy)
+    ax2.set_xlabel('Number of epochs')
+    ax2.set_ylabel('Number of hidden layers')
+    fig2.colorbar(c)
+    fig2.savefig('GridSearch_2.png')
+
 # =====================================================================
 
 if __name__ == '__main__':
@@ -64,32 +89,36 @@ if __name__ == '__main__':
     #y_train = np_utils.to_categorical(y_train, num_classes)
     #y_test = np_utils.to_categorical(y_test, num_classes)
 
-    model = keras.Sequential([
-        keras.layers.Flatten(input_shape=(28, 28)),
-        keras.layers.Dense(128, activation=tf.nn.relu),
-        keras.layers.Dense(10, activation=tf.nn.softmax)
-    ])
+    model = TrainModel(X_train, y_train, 128, 5)
 
-    model.compile(optimizer=tf.train.AdamOptimizer(), 
-              loss='sparse_categorical_crossentropy',
-              metrics=['accuracy'])
-
-    model.fit(X_train, y_train, epochs=5)
-
+    # check accuracy
     test_loss, test_acc = model.evaluate(X_test, y_test)
-
     print('Test accuracy:', test_acc)
 
     predictions = model.predict(X_test)    
     likeliestPred = np.argmax(predictions[0])   #most likely prediction
     print('First item is most likely:', np.argmax(predictions[0]))
 
-    ## grid search for a suitable parameter for the hidden layers and epochs
-    #number_of_hidden_layers = np.array([10, 20, 30, 40, 50, 100, 150, 200])
-    #number_of_epochs = np.array([1, 2, 3, 4, 5, 10, 20, 30])
+    # grid search for a suitable parameter for the hidden layers and epochs
+    number_of_hidden_layers = np.array([10, 20, 30, 40, 50, 100, 150, 200])
+    number_of_epochs = np.array([1, 2, 3, 4, 5, 10, 20, 30])
 
-    #for i in number_of_hidden_layers:
-    #    for j in 
+    losses = list()
+    accuracies = list()
+
+    for i in number_of_epochs:
+        for j in number_of_hidden_layers:
+            print('Number of epochs:', i)
+            print('Number of hidden layers:', j)
+            model = TrainModel(X_train, y_train, j, i)
+        
+            # check accuracy
+            test_loss, test_acc = model.evaluate(X_test, y_test)
+            losses.append(test_loss)
+            accuracies.append(test_acc)
+            print('Test accuracy:', test_acc)
+    
+    plotGridResults (number_of_epochs, number_of_hidden_layers, accuracies)
 
     #train_datagen = ImageDataGenerator(
     #    rescale=1./255, 
