@@ -110,7 +110,7 @@ if __name__ == '__main__':
         losses = list()
         accuracies = list()
 
-        text_file = open("Output.txt", "w")
+        text_file = open("Output_new.txt", "w")
 
         # for the text file - print number of layers first - as we are making a table
         text_file.write('Number of hidden layers: ')
