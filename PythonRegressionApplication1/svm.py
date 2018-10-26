@@ -43,14 +43,19 @@ def main():
   # plot the first 8 images
   plotData (digit_images, y_plot)
   
+  # split the data into training and test parts - 10% test  
+  X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.1)
+      
   #create model svm
+  model= svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
+    decision_function_shape='ovr', degree=3, gamma='scale', kernel='rbf',
+    max_iter=-1, probability=False, random_state=None, shrinking=True,
+    tol=0.001, verbose=False)
+
   #model = svm.SVC(C=0.5, gamma=0.75,kernel='polynomial')
   #model = svm.SVC(C=0.5, gamma=0.75,kernel='rbf')
-  model = svm.SVC(C=0.5, gamma=0.75,kernel='sigmoid')
+  #model = svm.SVC(C=0.5, gamma=0.75,kernel='sigmoid')
 
-  # split the data into training and test parts - 10% test  
-  X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.9)
-  
   # now train the model ...
   model.fit(X_train,y_train)
   
@@ -59,22 +64,31 @@ def main():
   target_names = ['class 0', 'class 1', 'class 2', 'class 3', 'class 4', 'class 5', 'class 6', 'class 7', 'class 8', 'class 9']
   print(classification_report(y_test, y_result, target_names=target_names))
 
-  # add a column of ones to input data
-  m=len(y)
-  Xt = np.column_stack((np.ones((m, 1)), X))
+  ## add a column of ones to input data
+  #m=len(y)
+  #Xt = np.column_stack((np.ones((m, 1)), X))
 
-  score = computeScore(Xt,y_test,y_result)
-  print("score")
-  print(score)
+  #score = computeScore(Xt,y_test,y_result)
+  #print("score")
+  #print(score)
 
-  from sklearn.model_selection import cross_val_score
-  model = svm.SVC(kernel='rbf', decision_function_shape='ovr')
-  C_s, gamma_s = np.meshgrid(np.logspace(-2, 1, 20), np.logspace(-2, 1, 20))
+  #from sklearn.model_selection import cross_val_score
+  from sklearn.model_selection import GridSearchCV
+  
+  model= svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
+  decision_function_shape='ovr', degree=3, gamma='scale', kernel='rbf',
+  max_iter=-1, probability=False, random_state=None, shrinking=True,
+  tol=0.001, verbose=False)
+
+  C_s, gamma_s = np.meshgrid(np.logspace(-1, 1, 3), np.logspace(-3, 0, 4))
   scores = list()
   i=0; j=0
   for C, gamma in zip(C_s.ravel(),gamma_s.ravel()):
     model.C = C
     model.gamma = gamma
+
+    grid_clsf = GridSearchCV(estimator = model, )
+
     this_scores = cross_val_score(model, X_train, y_train, cv=5)
     scores.append(np.mean(this_scores))
   scores=np.array(scores)
