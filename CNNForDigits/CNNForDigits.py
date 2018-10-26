@@ -106,18 +106,33 @@ if __name__ == '__main__':
     losses = list()
     accuracies = list()
 
-    for i in number_of_epochs:
+    text_file = open("Output.txt", "w")
+
+    # for the text file - print number of layers first - as we are making a table
+    text_file.write('Number of hidden layers: ')
+    for j in number_of_hidden_layers:
+        text_file.write('%iLoss Accuracy ' % j)
+                    
+    for i in number_of_epochs:        
+        text_file.write('\nNumber of epochs:%i ' % i)
+
         for j in number_of_hidden_layers:
-            print('Number of epochs:', i)
-            print('Number of hidden layers:', j)
+            print('Number of epochs:', i) 
+            print('Number of hidden layers:', j)           
+
             model = TrainModel(X_train, y_train, j, i)
         
             # check accuracy
             test_loss, test_acc = model.evaluate(X_test, y_test)
             losses.append(test_loss)
+            text_file.write("%.3f " % test_loss)
             accuracies.append(test_acc)
+            text_file.write("%.3f " % test_acc)
+
             print('Test accuracy:', test_acc)
     
+    text_file.close()
+
     plotGridResults (number_of_epochs, number_of_hidden_layers, accuracies)
 
     #train_datagen = ImageDataGenerator(
