@@ -99,41 +99,45 @@ if __name__ == '__main__':
     likeliestPred = np.argmax(predictions[0])   #most likely prediction
     print('First item is most likely:', np.argmax(predictions[0]))
 
-    # grid search for a suitable parameter for the hidden layers and epochs
-    number_of_hidden_layers = np.array([10, 20, 30, 40, 50, 100, 150, 200])
-    number_of_epochs = np.array([1, 2, 3, 4, 5, 10, 20, 30])
+    testMultipleParams = false
 
-    losses = list()
-    accuracies = list()
+    if testMultipleParams:
 
-    text_file = open("Output.txt", "w")
+        # grid search for a suitable parameter for the hidden layers and epochs
+        number_of_hidden_layers = np.array([10, 20, 30, 40, 50, 100, 150, 200])
+        number_of_epochs = np.array([1, 2, 3, 4, 5, 10, 20, 30])
 
-    # for the text file - print number of layers first - as we are making a table
-    text_file.write('Number of hidden layers: ')
-    for j in number_of_hidden_layers:
-        text_file.write('%iLoss Accuracy ' % j)
-                    
-    for i in number_of_epochs:        
-        text_file.write('\nNumber of epochs:%i ' % i)
+        losses = list()
+        accuracies = list()
 
+        text_file = open("Output.txt", "w")
+
+        # for the text file - print number of layers first - as we are making a table
+        text_file.write('Number of hidden layers: ')
         for j in number_of_hidden_layers:
-            print('Number of epochs:', i) 
-            print('Number of hidden layers:', j)           
+            text_file.write('%iLoss Accuracy ' % j)
+                    
+        for i in number_of_epochs:        
+            text_file.write('\nNumber of epochs:%i ' % i)
 
-            model = TrainModel(X_train, y_train, j, i)
+            for j in number_of_hidden_layers:
+                print('Number of epochs:', i) 
+                print('Number of hidden layers:', j)           
+
+                model = TrainModel(X_train, y_train, j, i)
         
-            # check accuracy
-            test_loss, test_acc = model.evaluate(X_test, y_test)
-            losses.append(test_loss)
-            text_file.write("%.3f " % test_loss)
-            accuracies.append(test_acc)
-            text_file.write("%.3f " % test_acc)
+                # check accuracy
+                test_loss, test_acc = model.evaluate(X_test, y_test)
+                losses.append(test_loss)
+                text_file.write("%.3f " % test_loss)
+                accuracies.append(test_acc)
+                text_file.write("%.3f " % test_acc)
 
-            print('Test accuracy:', test_acc)
+                print('Test accuracy:', test_acc)
     
-    text_file.close()
+        text_file.close()
 
-    plotGridResults (number_of_epochs, number_of_hidden_layers, accuracies)
+        plotGridResults (number_of_epochs, number_of_hidden_layers, accuracies)
 
     #train_datagen = ImageDataGenerator(
     #    rescale=1./255, 

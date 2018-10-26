@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2026
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PythonRegressionApplication1", "PythonRegressionApplication1.pyproj", "{CB2840E3-5CE9-4C97-B75A-45071F23C6EF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CB2840E3-5CE9-4C97-B75A-45071F23C6EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB2840E3-5CE9-4C97-B75A-45071F23C6EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {342BEA5A-BBAC-4128-844A-92383980AF5A}
+	EndGlobalSection
+EndGlobal
