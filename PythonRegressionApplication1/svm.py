@@ -4,6 +4,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from sklearn import svm
 
+# Try comment
+
 def plotData(digit_images,y):
   
   images_and_labels = list(zip(digit_images, y))
