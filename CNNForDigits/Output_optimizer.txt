@@ -1,0 +1,12 @@
+Learning rate 0.00001
+Optimizer: Adam optimizer 31.023 sec 0.591
+Optimizer: Gradient Descent 29.441 sec 0.582
+Optimizer: RMSPropOptimizer 33.940 sec 0.733
+Optimizer: Momentum 34.847 sec 0.742
+Optimizer: Adagrad 36.972 sec 0.110
+Learning rate 0.0001 
+Optimizer: Adam optimizer 41.420 sec 0.923
+Optimizer: Gradient Descent 40.390 sec 0.917
+Optimizer: RMSPropOptimizer 35.293 sec 0.752
+Optimizer: Momentum 35.970 sec 0.673
+Optimizer: Adagrad 39.180 sec 0.263
