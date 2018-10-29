@@ -56,7 +56,9 @@ if __name__ == '__main__':
 
     sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
    
-    testMultipleParams = True
+    testMultipleParams = False
+
+    testSignificance = True
 
     testOptimizationFrameworks = False
 
@@ -88,18 +90,27 @@ if __name__ == '__main__':
     X_train = X_train / 255.0
     X_test = X_test / 255.0
     
-    #num_classes = 10
-    #y_train = np_utils.to_categorical(y_train, num_classes)
-    #y_test = np_utils.to_categorical(y_test, num_classes)
+    if testSignificance:
 
-    ##model = TrainModel(X_train, y_train, 128, 5)
-    #optimizer = tf.train.AdagradOptimizer(learning_rate=0.001)    
-    #model = TrainModelOptimizer(X_train, y_train, 128, 5, optimizer)
-  
-    ## check accuracy
-    #test_loss, test_acc = model.evaluate(X_test, y_test)
-    #print('Test accuracy:', test_acc)
+          
+        text_file = open("statistical_significance.txt", "w")
 
+        for i in range (0, 10):
+        
+        #num_classes = 10
+        #y_train = np_utils.to_categorical(y_train, num_classes)
+        #y_test = np_utils.to_categorical(y_test, num_classes)
+
+            model = TrainModel(X_train, y_train, 200, 30)
+            #optimizer = tf.train.AdagradOptimizer(learning_rate=0.001)    
+            #model = TrainModelOptimizer(X_train, y_train, 128, 5, optimizer)
+
+            # check accuracy
+            test_loss, test_acc = model.evaluate(X_test, y_test)
+            print('Test accuracy:', test_acc)
+            text_file.write("%.3f\n" % test_acc)
+
+        text_file.close()
     #predictions = model.predict(X_test)    
     #likeliestPred = np.argmax(predictions[0])   #most likely prediction
     #print('First item is most likely:', np.argmax(predictions[0]))
@@ -151,7 +162,7 @@ if __name__ == '__main__':
         plotGridResults (number_of_epochs, number_of_hidden_layers, accuracies, 'GridSearch_3.png')
 
         plotGridResults (number_of_epochs, number_of_hidden_layers, timings, 'GridSearch_3_timings.png')
- 
+
     if testOptimizationFrameworks:
 
                  
