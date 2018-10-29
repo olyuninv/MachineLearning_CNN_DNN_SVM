@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import mnist
+
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from sklearn.model_selection import cross_val_score
@@ -31,12 +33,13 @@ def normaliseData(x):
   # rescale data to lie between 0 and 1
   scale = x.max(axis=0)
   return (x / scale, scale)
+
   
 def main():
 
   train_test = True
-  train_RBF = False
-  train_linear = True
+  train_RBF = True
+  train_linear = False
   train_polynomial = False
 
   n_samples = 1797
@@ -86,7 +89,18 @@ def main():
             tol=0.001, verbose=False)
         this_scores = cross_val_score(model, X_train, y_train, cv=5, n_jobs=1)
         scores.append(np.mean(this_scores))
+      
+      out_file = open('Scores_rbf', 'w')
+      for i in range(0, 10):
+          out_file.write('\n%.5f,\n' % gamma_s[i, 0])  
+          for j in range(0, 10):
+              out_file.write('%.5f,' % C_s[0, j])
+              out_file.write('%.3f,' % scores[i*10 + j])
+             
               
+              
+      out_file.close()
+                    
       scores = np.array(scores)
       scores = scores.reshape(C_s.shape)
       fig2, ax2 = plt.subplots(figsize=(12,8))
