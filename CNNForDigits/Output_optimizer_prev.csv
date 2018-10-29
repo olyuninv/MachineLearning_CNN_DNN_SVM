@@ -1,0 +1,36 @@
+Learning rate 0.00001 1 2 3 
+Optimizer: Adam optimizer 32.792 sec 0.751
+Optimizer: Gradient Descent 32.521 sec 0.642
+Optimizer: RMSPropOptimizer 38.029 sec 0.493
+Optimizer: Momentum 37.780 sec 0.664
+Optimizer: Adagrad 40.747 sec 0.193
+Learning rate 0.0001 
+Optimizer: Adam optimizer 45.195 sec 0.852
+Optimizer: Gradient Descent 43.939 sec 0.913
+Optimizer: RMSPropOptimizer 36.933 sec 0.767
+Optimizer: Momentum 38.013 sec 0.639
+Optimizer: Adagrad 40.362 sec 0.427
+Learning rate 0.001 
+Optimizer: Adam optimizer 45.365 sec 0.659
+Optimizer: Gradient Descent 44.399 sec 0.729
+Optimizer: RMSPropOptimizer 48.999 sec 0.735
+Optimizer: Momentum 41.858 sec 0.195
+Optimizer: Adagrad 43.425 sec 0.803
+Learning rate 0.010 
+Optimizer: Adam optimizer 49.034 sec 0.103
+Optimizer: Gradient Descent 48.176 sec 0.089
+Optimizer: RMSPropOptimizer 52.537 sec 0.103
+Optimizer: Momentum 53.952 sec 0.098
+Optimizer: Adagrad 45.327 sec 0.382
+Learning rate 0.100 
+Optimizer: Adam optimizer 50.764 sec 0.089
+Optimizer: Gradient Descent 49.630 sec 0.114
+Optimizer: RMSPropOptimizer 54.116 sec 0.103
+Optimizer: Momentum 55.583 sec 0.098
+Optimizer: Adagrad 57.871 sec 0.101
+Learning rate 1.000 
+Optimizer: Adam optimizer 63.119 sec 0.103
+Optimizer: Gradient Descent 62.097 sec 0.101
+Optimizer: RMSPropOptimizer 52.423 sec 0.103
+Optimizer: Momentum 53.894 sec 0.101
+Optimizer: Adagrad 55.983 sec 0.103

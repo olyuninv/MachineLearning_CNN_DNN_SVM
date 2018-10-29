@@ -56,9 +56,9 @@ if __name__ == '__main__':
 
     sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
    
-    testMultipleParams = False
+    testMultipleParams = True
 
-    testOptimizationFrameworks = True
+    testOptimizationFrameworks = False
 
     #load mnist dataset
     (X_train, y_train), (X_test, y_test) = mnist.load_data() 
@@ -84,13 +84,13 @@ if __name__ == '__main__':
     fig
     plt.savefig('exampleImages.png')
 
-    ##normalise data
-    #X_train = X_train / 255.0
-    #X_test = X_test / 255.0
+    #normalise data
+    X_train = X_train / 255.0
+    X_test = X_test / 255.0
     
-    ##num_classes = 10
-    ##y_train = np_utils.to_categorical(y_train, num_classes)
-    ##y_test = np_utils.to_categorical(y_test, num_classes)
+    #num_classes = 10
+    #y_train = np_utils.to_categorical(y_train, num_classes)
+    #y_test = np_utils.to_categorical(y_test, num_classes)
 
     ##model = TrainModel(X_train, y_train, 128, 5)
     #optimizer = tf.train.AdagradOptimizer(learning_rate=0.001)    
@@ -148,9 +148,9 @@ if __name__ == '__main__':
     
         text_file.close()
 
-        plotGridResults (number_of_epochs, number_of_hidden_layers, accuracies, 'GridSearch_2.png')
+        plotGridResults (number_of_epochs, number_of_hidden_layers, accuracies, 'GridSearch_3.png')
 
-        plotGridResults (number_of_epochs, number_of_hidden_layers, timings, 'GridSearch_2_timings.png')
+        plotGridResults (number_of_epochs, number_of_hidden_layers, timings, 'GridSearch_3_timings.png')
  
     if testOptimizationFrameworks:
 
@@ -159,7 +159,7 @@ if __name__ == '__main__':
          accuracies1 = list()
          timings1  = list()
 
-         learning_rates = np.array([0.00001, 0.0001]) #, 0.001, 0.01, 0.1, 1])
+         learning_rates = np.array([0.00001, 0.0001, 0.001, 0.01, 0.1, 1])
 
          text_file = open("Output_optimizer.txt", "w")
 
@@ -172,7 +172,7 @@ if __name__ == '__main__':
              print('Optimizer: Adam optimizer: ')
              time1 = time.time()
              optimizerAdam = tf.train.AdamOptimizer(learning_rate)    
-             model = TrainModelOptimizer(X_train, y_train, 128, 5, optimizerAdam)
+             model = TrainModelOptimizer(X_train, y_train, 128, 10, optimizerAdam)
              time2 = time.time()
              time_span = time2 - time1
              timings1.append(time_span)
@@ -192,7 +192,7 @@ if __name__ == '__main__':
              optimizerSGD = tf.train.GradientDescentOptimizer(learning_rate)    
 
              time1 = time.time()
-             model = TrainModelOptimizer(X_train, y_train, 128, 5, optimizerSGD)
+             model = TrainModelOptimizer(X_train, y_train, 128, 10, optimizerSGD)
              time2 = time.time()
              time_span = time2 - time1
              timings1.append(time_span)
@@ -212,7 +212,7 @@ if __name__ == '__main__':
              optimizerRMS = tf.train.RMSPropOptimizer(learning_rate=learning_rate)    
     
              time1 = time.time()
-             model = TrainModelOptimizer(X_train, y_train, 128, 5, optimizerRMS)
+             model = TrainModelOptimizer(X_train, y_train, 128, 10, optimizerRMS)
              time2 = time.time()
              time_span = time2 - time1
              timings1.append(time_span)
@@ -232,7 +232,7 @@ if __name__ == '__main__':
              optimizerMomentum = tf.train.MomentumOptimizer(learning_rate=learning_rate, momentum = 0.9)    
     
              time1 = time.time()
-             model = TrainModelOptimizer(X_train, y_train, 128, 5, optimizerMomentum)
+             model = TrainModelOptimizer(X_train, y_train, 128, 10, optimizerMomentum)
              time2 = time.time()
              time_span = time2 - time1
              timings1.append(time_span)
@@ -252,7 +252,7 @@ if __name__ == '__main__':
              optimizerAdagrad = tf.train.AdagradOptimizer(learning_rate=learning_rate)    
     
              time1 = time.time()
-             model = TrainModelOptimizer(X_train, y_train, 128, 5, optimizerAdagrad)
+             model = TrainModelOptimizer(X_train, y_train, 128, 10, optimizerAdagrad)
              time2 = time.time()
              time_span = time2 - time1
              timings1.append(time_span)
@@ -271,13 +271,14 @@ if __name__ == '__main__':
          #try plot                  
          fig = plt.figure()   
          x = ['Adam', 'Grad', 'RMS', 'Momentum', 'Adagrad']
-         for i in range(0,2):
+         for i in range(0,6):
              c = [accuracies1[i * 5 + index] for index in range(0,5)]   # because there are 5 Optimizers
              label = learning_rates[i]
              plt.plot(x, c, label=label)
          plt.ylabel('Accuracy')
          plt.xlabel('Optimizer')
-         plt.title('Accuracy depending on learning rate in different Optimizers')
+         plt.title('Accuracy depending on the learning rate in different Optimizers. Number of epochs - 10, Number of hidden layers - 128')
          plt.legend()
-         plt.show()
+         fig.show()
+         fig.savefig('Optimizers_learningrate.png')
          
