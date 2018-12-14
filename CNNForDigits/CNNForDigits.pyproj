@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>520a9baf-2d0f-4bd5-b4a4-482cae40e438</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>CNNForDigits.py</StartupFile>
+    <StartupFile>CNNForAnimals.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>

@@ -7,7 +7,9 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Placeholder_DNN", "Placehol
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "CNNForDigits", "CNNForDigits\CNNForDigits.pyproj", "{520A9BAF-2D0F-4BD5-B4A4-482CAE40E438}"
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PythonRegressionApplication1", "PythonRegressionApplication1\PythonRegressionApplication1.pyproj", "{D4092BF4-1137-4B0D-9633-753B62865A46}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PythonRegressionApplication1", "PythonRegressionApplication1\PythonRegressionApplication1.pyproj", "{A63F0B05-751A-4013-85C8-EBA1C46A0E46}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Common", "Common\Common.pyproj", "{DC4DB89A-FADC-48EB-98B3-1FFB50D41E66}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,12 +33,18 @@ Global
 		{520A9BAF-2D0F-4BD5-B4A4-482CAE40E438}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{520A9BAF-2D0F-4BD5-B4A4-482CAE40E438}.Release|x64.ActiveCfg = Release|Any CPU
 		{520A9BAF-2D0F-4BD5-B4A4-482CAE40E438}.Release|x86.ActiveCfg = Release|Any CPU
-		{D4092BF4-1137-4B0D-9633-753B62865A46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D4092BF4-1137-4B0D-9633-753B62865A46}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D4092BF4-1137-4B0D-9633-753B62865A46}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D4092BF4-1137-4B0D-9633-753B62865A46}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D4092BF4-1137-4B0D-9633-753B62865A46}.Release|x64.ActiveCfg = Release|Any CPU
-		{D4092BF4-1137-4B0D-9633-753B62865A46}.Release|x86.ActiveCfg = Release|Any CPU
+		{A63F0B05-751A-4013-85C8-EBA1C46A0E46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A63F0B05-751A-4013-85C8-EBA1C46A0E46}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A63F0B05-751A-4013-85C8-EBA1C46A0E46}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A63F0B05-751A-4013-85C8-EBA1C46A0E46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A63F0B05-751A-4013-85C8-EBA1C46A0E46}.Release|x64.ActiveCfg = Release|Any CPU
+		{A63F0B05-751A-4013-85C8-EBA1C46A0E46}.Release|x86.ActiveCfg = Release|Any CPU
+		{DC4DB89A-FADC-48EB-98B3-1FFB50D41E66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC4DB89A-FADC-48EB-98B3-1FFB50D41E66}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DC4DB89A-FADC-48EB-98B3-1FFB50D41E66}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DC4DB89A-FADC-48EB-98B3-1FFB50D41E66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC4DB89A-FADC-48EB-98B3-1FFB50D41E66}.Release|x64.ActiveCfg = Release|Any CPU
+		{DC4DB89A-FADC-48EB-98B3-1FFB50D41E66}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
