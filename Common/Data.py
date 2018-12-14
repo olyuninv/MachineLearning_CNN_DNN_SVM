@@ -11,9 +11,8 @@ class DataReader():
             img = Image.open(os.path.join(folderPath, file))
             img = img.resize((resizeSize, resizeSize), Image.LANCZOS)
 
-            if ifBW:
-
-
+            #if ifBW:
+            
             np_img = np.array(img)
             data.append(np_img)
         
