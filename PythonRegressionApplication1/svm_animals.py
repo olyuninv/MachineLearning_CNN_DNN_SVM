@@ -3,7 +3,7 @@ import sys
 sys.path.append("../Common/")
 from Data import DataReader
 import matplotlib.pyplot as plt
-#import mnist
+import mnist
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
@@ -85,25 +85,6 @@ def main():
   # split the data into training and test parts - 10% test
   ##X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.1)
   X_train, X_test, y_train, y_test = train_test_split(train_x,train_y,test_size=0.1)
-  
-  import matplotlib.pyplot as plt
-
-  plt.figure()
-  plt.imshow(X_train[0])
-  plt.colorbar()
-  plt.grid(False)
-  plt.savefig('firstimageAnimal.png')
-    
-  fig = plt.figure()
-  for i in range(16):
-        plt.subplot(4,4,i+1)
-        plt.tight_layout()
-        plt.imshow(X_train[i], cmap='gray', interpolation='none')
-        plt.title("Label: {}".format(y_train[i]))
-        plt.xticks([])
-        plt.yticks([])
-  fig
-  plt.savefig('exampleAnimalImages.png')
 
   #X_train=X_train.reshape(3240,784)
   #X_test=X_test.reshape((3600-3240),784)
@@ -114,7 +95,7 @@ def main():
       #create model svm
       #model = svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
       model = svm.SVC(C=1.0, cache_size=1000, class_weight=None, coef0=0.0,
-        decision_function_shape='ovr', degree=3, gamma=0.02, kernel='rbf',
+        decision_function_shape='ovr', degree=3, gamma='scale', kernel='rbf',
         max_iter=-1, probability=False, random_state=None, shrinking=True,
         tol=0.001, verbose=False)
 
@@ -131,7 +112,7 @@ def main():
   if train_RBF:
       import matplotlib.pyplot as plt
 
-      C_s, gamma_s = np.meshgrid(np.logspace(-2, -1, 3), np.logspace(-2, 1, 3))
+      C_s, gamma_s = np.meshgrid(np.logspace(-2, -1, 20), np.logspace(-2, 1, 20))
       #C_s, gamma_s = np.meshgrid(np.logspace(-2, -0, 10), np.logspace(-5,-2, 10))
       scores = list()
       i = 0

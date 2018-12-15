@@ -1,9 +1,6 @@
 import numpy as np
-import sys
-sys.path.append("../Common/")
-from Data import DataReader
 import matplotlib.pyplot as plt
-#import mnist
+import mnist
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
@@ -45,76 +42,23 @@ def main():
   train_linear = False
   train_polynomial = False
 
-  #n_samples = 1797
-  #digit_images = np.loadtxt('digit_images.txt')
-  #digit_images = digit_images.reshape((n_samples, 8, 8))
-  #X = digit_images.reshape((n_samples, -1))
-  #y = np.loadtxt('digit_classes.txt')
-  #y_plot = y.reshape((n_samples, -1))
+  n_samples = 1797
+  digit_images = np.loadtxt('digit_images.txt')
+  digit_images = digit_images.reshape((n_samples, 8, 8))
+  X = digit_images.reshape((n_samples, -1))
+  y = np.loadtxt('digit_classes.txt')
+  y_plot = y.reshape((n_samples, -1))
   
   # plot the first 8 images
-  #plotData(digit_images, y_plot)
-
-  #dataLion = DataReader.readImages('../../Data/n02118333/', 0, 28, True)
-  #dataFox = DataReader.readImages('../../Data/n02129165/', 1, 28, True)
-  #dataTortoise = DataReader.readImages('../../Data/n01669191/', 2, 28, True)
-  dataLion = DataReader.readImages('../../Data/n02118333/', 0, 128, True)
-  dataFox = DataReader.readImages('../../Data/n02129165/', 1, 128, True)
-  dataTortoise = DataReader.readImages('../../Data/n01669191/', 2, 128, True)
-
-  # Keep first 1200
-  dataLion = dataLion[:1200]
-  dataFox = dataFox[:1200]
-  dataTortoise = dataTortoise[:1200]
-
-  dataset = np.concatenate([dataLion, dataFox, dataTortoise])
-  np.random.shuffle(dataset)
-
-  train_x = list()
-  train_y = list()
-    
-  # split into x and y
-  for (X, y) in dataset:
-      train_x.append(X)
-      train_y.append(y)
-
-  train_x = np.asarray(train_x)
-  train_y = np.asarray(train_y)
-  print("Successfully loaded data")
+  plotData(digit_images, y_plot)
   
   # split the data into training and test parts - 10% test
-  ##X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.1)
-  X_train, X_test, y_train, y_test = train_test_split(train_x,train_y,test_size=0.1)
-  
-  import matplotlib.pyplot as plt
-
-  plt.figure()
-  plt.imshow(X_train[0])
-  plt.colorbar()
-  plt.grid(False)
-  plt.savefig('firstimageAnimal.png')
-    
-  fig = plt.figure()
-  for i in range(16):
-        plt.subplot(4,4,i+1)
-        plt.tight_layout()
-        plt.imshow(X_train[i], cmap='gray', interpolation='none')
-        plt.title("Label: {}".format(y_train[i]))
-        plt.xticks([])
-        plt.yticks([])
-  fig
-  plt.savefig('exampleAnimalImages.png')
-
-  #X_train=X_train.reshape(3240,784)
-  #X_test=X_test.reshape((3600-3240),784)
-  X_train=X_train.reshape(3240,16384)
-  X_test=X_test.reshape((3600-3240),16384)
+  X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.1)
       
   if train_test:
       #create model svm
-      #model = svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
-      model = svm.SVC(C=1.0, cache_size=1000, class_weight=None, coef0=0.0,
-        decision_function_shape='ovr', degree=3, gamma=0.02, kernel='rbf',
+      model = svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
+        decision_function_shape='ovr', degree=3, gamma='scale', kernel='rbf',
         max_iter=-1, probability=False, random_state=None, shrinking=True,
         tol=0.001, verbose=False)
 
@@ -123,16 +67,14 @@ def main():
   
       y_result = model.predict(X_test)
 
-      #target_names = ['class 0', 'class 1', 'class 2', 'class 3', 'class 4', 'class 5', 'class 6', 'class 7', 'class 8', 'class 9']
-      target_names = ['lion','fox','turtle']
+      target_names = ['class 0', 'class 1', 'class 2', 'class 3', 'class 4', 'class 5', 'class 6', 'class 7', 'class 8', 'class 9']
       print(classification_report(y_test, y_result, target_names=target_names))
       
 
   if train_RBF:
       import matplotlib.pyplot as plt
 
-      C_s, gamma_s = np.meshgrid(np.logspace(-2, -1, 3), np.logspace(-2, 1, 3))
-      #C_s, gamma_s = np.meshgrid(np.logspace(-2, -0, 10), np.logspace(-5,-2, 10))
+      C_s, gamma_s = np.meshgrid(np.logspace(-2, -0, 10), np.logspace(-5,-2, 10))
       scores = list()
       i = 0
       j = 0
