@@ -28,7 +28,7 @@ if __name__ == '__main__':
     dataTortoise = dataTortoise[:1200]
 
     dataset = np.concatenate([dataLion, dataFox, dataTortoise])
-    random.shuffle(dataset)
+    np.random.shuffle(dataset)
 
     train_x = list()
     train_y = list()
@@ -40,5 +40,4 @@ if __name__ == '__main__':
 
     train_x = np.asarray(train_x)
     train_y = np.asarray(train_y)
-    
     print("Successfully loaded data")
