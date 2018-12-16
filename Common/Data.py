@@ -18,14 +18,14 @@ class DataReader():
             
             np_img = np.array(img)
             
-            if np_img.shape[0] < min_size_image: 
-                min_size_image = np_img.shape[0]
+            #if np_img.shape[0] < min_size_image: 
+            #    min_size_image = np_img.shape[0]
             
-            if np_img.shape[1] < min_size_image: 
-                min_size_image = np_img.shape[1]
+            #if np_img.shape[1] < min_size_image: 
+            #    min_size_image = np_img.shape[1]
 
             data.append((np_img, label))
         
-        print ("Min image dimension size: %i" % min_size_image)
+        #print ("Min image dimension size: %i" % min_size_image)
         np_data = np.asarray(data)
         return np_data
