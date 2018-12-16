@@ -19,14 +19,14 @@ class Graphs():
                     for countn in range (len(row)):
                         if (countn - 1) % 3 == 0:
                             words = row[countn].split('_')
-                            firstAxis.append(int(words[0]))
+                            firstAxis.append(float(words[0]))
 
                     line_count += 1
                 else:
                     for countn in range (len(row)):
                         if (countn == 0):
-                           secondAxis.append(int(row[countn])) 
-                        elif (metric == 'accuracy'):
+                           secondAxis.append(float(row[countn]))                          
+                        elif (metric == 'accuracy' or metric == 'accuracy2'):
                             if (countn - 3) % 3 == 0 and countn != 0:
                                 metricData.append(float(row[countn]))
                         elif (metric == 'timing'):
@@ -37,10 +37,11 @@ class Graphs():
        print('Finished reading metric data from csv. Building graph..')
 
        metricData = np.array(metricData)
-       metricData=metricData.reshape(len(firstAxis), len(secondAxis))
+       metricData=metricData.reshape(len(secondAxis), len(firstAxis))
        fig2, ax2 = plt.subplots(figsize=(12,8))
        c=ax2.contourf(firstAxis,secondAxis,metricData)
        ax2.set_xlabel(axis1Name)
        ax2.set_ylabel(axis2Name)
        fig2.colorbar(c)
        fig2.savefig('%s.png' % metric)
+       plt.show()
