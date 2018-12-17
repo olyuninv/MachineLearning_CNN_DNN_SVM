@@ -325,8 +325,7 @@ if __name__ == '__main__':
         #print('First item is most likely:', np.argmax(predictions[0]))
 
     if cross_validate:
-        text_file = open("cross_validate.txt", "w")
-
+       
         folds = 5
         result = []
 
@@ -336,10 +335,10 @@ if __name__ == '__main__':
         for hl in hls:
             #for ep in eps:
                 with tf.Session() as session:
-                  result.append(cross_validate(session, X_train, y_train, hl, 30, split_size=folds))
+                  result.append(cross_validate(session, X_train, y_train, hl, 10, split_size=folds))
         
         result = np.reshape(result, ( len(hls), folds))
-        np.savetxt("crossvalidation_result.csv", result, delimiter=",")
+        np.savetxt("crossvalidation_result_animals.csv", result, delimiter=",")
 
         mean = np.mean(result, axis = 1)
         std = np.std(result, axis = 1)
@@ -358,5 +357,3 @@ if __name__ == '__main__':
         plt.show()   
 
         #print('Test accuracy: %f' % session.run(accuracy, feed_dict={x: test_x, y: test_y}))
-
-        text_file.close()

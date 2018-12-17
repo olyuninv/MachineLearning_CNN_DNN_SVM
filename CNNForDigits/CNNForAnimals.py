@@ -12,6 +12,7 @@ from keras.utils import to_categorical
 
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.model_selection import KFold
 import os
 import time
 
@@ -45,7 +46,7 @@ def TrainModelOptimizer(train_generator, validation_generator, number_of_hidden_
     model.add(layers.Dense(128, activation='relu'))        
     model.add(layers.Dense(3, activation='softmax'))
         
-    model.summary()
+    #model.summary()
 
     model.compile( 
               #optimizer=tf.train.RMSPropOptimizer(learning_rate=1e-4), 
@@ -63,6 +64,27 @@ def TrainModelOptimizer(train_generator, validation_generator, number_of_hidden_
 
     return model
 
+def cross_validate(session, train_datagen, validation_datagen, test_datagen, train_x_all, train_y_all, X_test, y_test, cross_hidden_layers, cross_epochs, split_size=5):
+    results = []
+    kf = KFold(n_splits=split_size)
+    for train_idx, val_idx in kf.split(train_x_all, train_y_all):
+        train_cross_x = train_x_all[train_idx]
+        train_cross_y = train_y_all[train_idx]
+        val_cross_x = train_x_all[val_idx]
+        val_cross_y = train_y_all[val_idx]
+
+        # connect ImageDataGenerator and 
+        train_generator = train_datagen.flow(train_cross_x, train_cross_y, batch_size=32, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
+        validation_generator = validation_datagen.flow(val_cross_x, val_cross_y, batch_size=32, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
+        test_generator = test_datagen.flow(X_test, y_test, batch_size=32, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
+
+        model = TrainModel(train_generator, validation_generator, cross_hidden_layers, cross_epochs)
+        cross_loss, cross_acc = model.evaluate_generator(test_generator, steps=100)
+    
+        results.append(cross_acc)
+
+    return results
+
 def plotGridResults(n_epochs, n_hiddenlayers, accuracy, filename):
     accuracy = np.array(accuracy)
     accuracy=accuracy.reshape(len(n_epochs), len(n_hiddenlayers))
@@ -77,11 +99,12 @@ def plotGridResults(n_epochs, n_hiddenlayers, accuracy, filename):
 
 if __name__ == '__main__':
     
-    loadData = False
+    loadData = True
     trainSingleNetwork = False
     testMultipleParams1 = False
     testMultipleParams2 = False
-    plotResults = True
+    plotResults = False
+    crossvalidateResults = True
 
     sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
@@ -313,4 +336,43 @@ if __name__ == '__main__':
                     
         text_file.close()
 
+    if crossvalidateResults:
+        text_file = open("cross_validate_animals.txt", "w")
+
+        X_train_cross = np.concatenate((X_train, X_valid), axis=0)
+        y_train_cross = np.concatenate((y_train, y_valid), axis=0)
+
+        folds = 5
+        result = []
+
+        hls = np.array([10, 20, 30, 40, 50, 100, 150, 200])
+        #eps = np.array([5, 6, 7])
+
+        for hl in hls:
+            #for ep in eps:
+                with tf.Session() as session:
+                  result.append(cross_validate(session, train_datagen, validation_datagen, test_datagen, X_train_cross, y_train_cross, X_test, y_test, hl, 20, split_size=folds))
+        
+        result = np.reshape(result, ( len(hls), folds))
+        np.savetxt("crossvalidation_result.csv", result, delimiter=",")
+
+        mean = np.mean(result, axis = 1)
+        std = np.std(result, axis = 1)
+       
+        fig, ax = plt.subplots()
+        ax.bar(range(len(hls)), mean, yerr=std, align='center', alpha=0.5, ecolor='black', capsize=10)
+        ax.set_ylabel('Accuracy')
+        ax.set_xticks(range(len(hls)))
+        ax.set_xticklabels(hls)
+        ax.set_title('Hidden layers')
+        ax.yaxis.grid(True)
+
+        # Save the figure and show
+        plt.tight_layout()
+        plt.savefig('bar_plot_error_animals.png')
+        plt.show()   
+
+        #print('Test accuracy: %f' % session.run(accuracy, feed_dict={x: test_x, y: test_y}))
+
+        text_file.close()
        
