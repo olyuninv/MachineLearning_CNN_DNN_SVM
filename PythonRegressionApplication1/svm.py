@@ -4,13 +4,13 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
 from sklearn import datasets, svm, metrics
-  
+
 def main():
 
   train_test = False
-  train_RBF = True
+  train_RBF = False
   train_linear = False
-  train_polynomial = False
+  train_polynomial = True
 
   digits = datasets.load_digits()
   images_and_labels = list(zip(digits.images, digits.target))
@@ -91,21 +91,19 @@ def main():
           for j in range(0, 10):
               out_file.write('%.5f,' % C_s[0, j])
               out_file.write('%.3f,' % scores[i*10 + j])
-             
-              
-              
       out_file.close()
                     
       scores = np.array(scores)
-      #scores = scores.reshape(C_s.shape)
-      scores = scores.reshape(len(C_s),len(gamma_s))
+      scores = scores.reshape(C_s.shape)
+      #scores = scores.reshape(len(C_s),len(gamma_s))
+
       fig2, ax2 = plt.subplots(figsize=(12,8))
       c = ax2.contourf(C_s,gamma_s,scores,10)
       ax2.set_xlabel('C')
       ax2.set_ylabel('gamma')
-      fig2.colorbar(c)
+      fig2.colorbar(c,ticks=[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9])
       fig2.show()
-      fig2.savefig('crossval.png')
+      fig2.savefig('RBF.png')
   
   if train_linear:
 
@@ -133,6 +131,7 @@ def main():
           scores.append(np.mean(this_scores))
           scores_std.append(np.std(this_scores))
 
+
       ## Do the plotting
       import matplotlib.pyplot as plt
 
@@ -148,7 +147,8 @@ def main():
   if train_polynomial:
       import matplotlib.pyplot as plt
 
-      C_s, gamma_s = np.meshgrid(np.logspace(-2, -0, 10), np.logspace(-5,-3.5, 10))
+      #C_s, gamma_s = np.meshgrid(np.logspace(-5, -1, 10), np.logspace(-3, -1, 10))
+      C_s, gamma_s = np.meshgrid(np.logspace(-3, 0, 10), np.logspace(-4, -3.7, 10))
       scores = list()
       i = 0
       j = 0
@@ -163,16 +163,29 @@ def main():
         this_scores = cross_val_score(model, X_train, y_train, cv=5, n_jobs=1)
         scores.append(np.mean(this_scores))
       
+
+      out_file = open('Scores_poly', 'w')
+      for i in range(0, 10):
+          out_file.write('\n%.5f,\n' % gamma_s[i, 0])  
+          for j in range(0, 10):
+              out_file.write('%.5f,' % C_s[0, j])
+              out_file.write('%.3f,' % scores[i*10 + j])
+      out_file.close()
+
       scores = np.array(scores)
       scores = scores.reshape(C_s.shape)
       
       fig3, ax3 = plt.subplots(figsize=(12,8))
-      c = ax3.contourf(C_s,gamma_s,scores)
+      #c = ax3.contourf(C_s,gamma_s,scores,np.arange(0.95, 1.0, .005))
+      c = ax3.contourf(C_s,gamma_s,scores,np.arange(0.1, 1.05, .025))
       ax3.set_xlabel('C')
       ax3.set_ylabel('gamma')
-      fig3.colorbar(c)
+      bounds=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+      #norm = colors.BoundaryNorm(bounds, cmap.N)
+      fig3.colorbar(c)#, boundaries=bounds,ticks=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0])
+
       fig3.show()
-      fig3.savefig('crossval.png')
+      fig3.savefig('POLY.png')
 
 
 if __name__ == '__main__':
