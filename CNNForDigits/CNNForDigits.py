@@ -12,6 +12,8 @@ from sklearn.model_selection import KFold
 import time
 import math
 
+from tempfile import TemporaryFile
+
 def LoadMNISTImages(folder, testOrTraining):
 
     mndata = MNIST(folder)
@@ -90,7 +92,7 @@ if __name__ == '__main__':
 
     testSignificance = False
 
-    crossValidate = True
+    crossValidate = False
 
     testOptimizationFrameworks = False
 
@@ -122,6 +124,63 @@ if __name__ == '__main__':
     X_train = X_train / 255.0
     X_test = X_test / 255.0
     
+    ##### TEST GAN
+
+    model1 = TrainModel(X_train, y_train, 200, 30)
+    test_loss, test_acc = model1.evaluate(X_test, y_test)
+    print('Accuracy on test model:%.4f' % test_acc)
+
+    lr = np.array(['0.1', '0.02', '0.002', '0.0002', '0.00002'])    
+    ep = np.array(['1','30','50'])
+
+    result = list()
+
+    for lr_counter in lr:
+        for ep_counter in ep:
+
+            fName = '../GeneratedData_LearningRate_Variance/MNIST_cDCGAN_results_lr' + lr_counter + '/Epoch'+ ep_counter + '.npy'
+
+            #dataGAN = np.load('../GeneratedData_LearningRate_Variance/MNIST_cDCGAN_results_standard_lr_0.0002_momentum_0.5_batch_100_Adam/Epoch1.npy')
+            dataGAN = np.load(fName)
+   
+            for i in range (10):
+                X_gan = dataGAN[100 * i :  100 * i + 100 :]
+                y_gan = np.empty(100)
+                y_gan.fill(i)
+
+                X_gan = X_gan + 1.0
+                X_gan = X_gan /2.0
+                #np.reshape(X_gan, -1)
+                X_gan = np.reshape(np.ravel(X_gan), (100, 28, 28))
+
+                #fig = plt.figure()
+                #for i_plt in range(16):
+                #    plt.subplot(4,4,i_plt+1)
+                #    plt.tight_layout()
+                #    plt.imshow(np.reshape(X_gan[i_plt], (28, 28)), cmap='gray')  #X_gan[i_plt], cmap='gray', interpolation='none')
+                #    plt.title("Digit: {}".format(y_gan[i_plt]))
+                #    plt.xticks([])
+                #    plt.yticks([])
+                #fig
+                #plt.savefig('./GAN/exampleImagesGAN_lr' + lr_counter + 'ep' + ep_counter + '_' + str(i) + '.png')
+                ##plt.show()
+
+                test_loss, test_acc = model1.evaluate(X_gan, y_gan)
+                result.append(test_acc)
+
+    result = np.asarray(result)
+    result = np.reshape(result, (15, 10))
+    np.save('./GAN/result.npy', result)
+    np.savetxt("./GAN/result.csv", result, delimiter=",")
+    
+
+    #saver = tf.train.Saver()     
+    
+    #exists = os.path.isfile(fileName)
+    #if exists:
+    #       os.remove(fileName)
+    #save_path = saver.save(sess,'./models/mnist_2.ckpt') 
+
     if testMultipleParams:
 
         # grid search for a suitable parameter for the hidden layers and epochs
