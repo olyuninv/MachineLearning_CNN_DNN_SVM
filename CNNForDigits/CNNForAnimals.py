@@ -1,4 +1,5 @@
-#import tensorflow as tf
+import tensorflow as tf
+
 #from tensorflow import keras
 from keras import layers 
 from keras import models 
@@ -76,13 +77,13 @@ def plotGridResults(n_epochs, n_hiddenlayers, accuracy, filename):
 
 if __name__ == '__main__':
     
-    loadData = True
+    loadData = False
     trainSingleNetwork = False
     testMultipleParams1 = False
-    testMultipleParams2 = True
-    plotResults = False
+    testMultipleParams2 = False
+    plotResults = True
 
-    #sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
+    sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
     if loadData:
         label_dict = {
@@ -163,13 +164,14 @@ if __name__ == '__main__':
 
         validation_datagen = ImageDataGenerator(rescale=1./255) 
         test_datagen = ImageDataGenerator(rescale=1./255) 
-    
+           
+    if trainSingleNetwork:
+
         # connect ImageDataGenerator and 
         train_generator = train_datagen.flow(X_train, y_train, batch_size=batch_size, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
         validation_generator = validation_datagen.flow(X_valid, y_valid, batch_size=batch_size, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
         test_generator = test_datagen.flow(X_test, y_test, batch_size=batch_size, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
 
-    if trainSingleNetwork:
         model = TrainModel(train_generator, validation_generator, 20, 5)
         results = model.evaluate_generator(test_generator, steps=1000)  
         print('Final test loss:', (results[0]*100.0))
@@ -185,6 +187,11 @@ if __name__ == '__main__':
     
     if testMultipleParams1:
 
+        # connect ImageDataGenerator and 
+        train_generator = train_datagen.flow(X_train, y_train, batch_size=batch_size, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
+        validation_generator = validation_datagen.flow(X_valid, y_valid, batch_size=batch_size, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
+        test_generator = test_datagen.flow(X_test, y_test, batch_size=batch_size, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
+
         # grid search for a suitable parameter for the hidden layers and epochs
         number_of_hidden_layers = np.array([10, 20, 30, 40, 50, 100, 150, 200])
         number_of_epochs = np.array([30]) #, 1, 2, 3, 4, 5, 10, 20])
@@ -193,7 +200,7 @@ if __name__ == '__main__':
         accuracies = list()
         timings  = list()
 
-        text_file = open("Output_Animals.txt", "a") #"w")
+        text_file = open("Output_Animals1.txt", "a") #"w")
 
         # for the text file - print number of layers first - as we are making a table
         #text_file.write('Number of hidden layers: ')
@@ -242,4 +249,68 @@ if __name__ == '__main__':
         #plotGridResults (number_of_epochs, number_of_hidden_layers, timings, 'GridSearch__animals_timings.png')
  
     if plotResults:
-        Graphs.plotGridResults ('Number of hidden layers', 'Number of epochs', '../CNNForDigits/Output_Animals1.csv', 'accuracy')
+        #Graphs.plotGridResults ('Number of hidden layers', 'Number of epochs', '../CNNForDigits/Output_Animals1.csv', 'accuracy')
+        Graphs.plotGridResults ('Batch size', 'Learning rate', '../CNNForDigits/Output_Animals2.csv', 'accuracy2')
+
+    if testMultipleParams2:
+        
+        # grid search for a suitable parameter for the learning rate and batch size
+        learning_rate = np.array([0.00001]) #0.01, 0.001, 0.0001, ])
+        batch_sizes = np.array([4, 8, 16, 32, 64]) #, 128])
+
+        losses = list()
+        accuracies = list()
+        timings  = list()
+
+        text_file = open("Output_Animals2.txt", "a") #"w")
+
+        # for the text file - print header
+        #text_file.write('Batchsize:,')
+        #for j in batch_sizes:
+        #    text_file.write('%i_Timing(s),%i_Loss,%i_Accuracy,' % j)
+
+        for i in learning_rate:        
+            text_file.write('\nLearningRate:%.5f,' % i)
+
+            for j in batch_sizes:
+                print('Learning rate:%.5f' % i) 
+                print('Batch size:%i' % j)   
+                
+                # connect ImageDataGenerator and 
+                train_generator = train_datagen.flow(X_train, y_train, batch_size=j, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
+                validation_generator = validation_datagen.flow(X_valid, y_valid, batch_size=j, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
+                test_generator = test_datagen.flow(X_test, y_test, batch_size=j, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
+                
+                setOptimizer = optimizers.Adam(lr=i)
+
+                # time training 
+                time1 = time.time()
+                model = TrainModelOptimizer(train_generator, validation_generator, 124, 30, setOptimizer)
+                time2 = time.time()
+                time_span = time2-time1
+                timings.append(time_span)
+                print('Training the model took: %s seconds' % time_span)
+                text_file.write("%.3f," % time_span)
+
+                # check accuracy
+                results = model.evaluate_generator(test_generator, steps=100) 
+                test_loss = results[0] * 100
+                test_acc = results[1] * 100
+                losses.append(test_loss)
+                text_file.write("%.3f," % test_loss)
+                accuracies.append(test_acc)
+                text_file.write("%.3f," % test_acc)
+
+                print('Test accuracy:', test_acc)
+                fileName = "./models/model_%.5flr_%ibatchSize.h5" % (i, j)
+        
+                exists = os.path.isfile(fileName)
+                if exists:
+                    os.remove(fileName)
+        
+                model.save(fileName) 
+                gc.collect()
+                    
+        text_file.close()
+
+       
