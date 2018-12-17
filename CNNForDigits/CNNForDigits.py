@@ -8,7 +8,9 @@ from keras import backend as K
 from mnist import MNIST
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.model_selection import KFold
 import time
+import math
 
 def LoadMNISTImages(folder, testOrTraining):
 
@@ -40,6 +42,34 @@ def TrainModelOptimizer(Xtrain, ytrain, number_of_hidden_layers, number_of_epoch
 
     return model
 
+#def run_train(session, train_x, train_y):
+#  print('\nStart training')
+#  session.run(init)
+#  for epoch in range(10):
+#    total_batch = int(train_x.shape[0] / batch_size)
+#    for i in range(total_batch):
+#      batch_x = train_x[i*batch_size:(i+1)*batch_size]
+#      batch_y = train_y[i*batch_size:(i+1)*batch_size]
+#      _, c = session.run([optimizer, cost], feed_dict={x: batch_x, y: batch_y})
+#      if i % 50 == 0:
+#        print('Epoch #%d step=%d cost=%f' % (epoch, i, c))
+
+def cross_validate(session, train_x_all, train_y_all, cross_hidden_layers, cross_epochs, split_size=5):
+  results = []
+  kf = KFold(n_splits=split_size)
+  for train_idx, val_idx in kf.split(train_x_all, train_y_all):
+    train_cross_x = train_x_all[train_idx]
+    train_cross_y = train_y_all[train_idx]
+    val_cross_x = train_x_all[val_idx]
+    val_cross_y = train_y_all[val_idx]
+
+    model = TrainModel(train_cross_x, train_cross_y, cross_hidden_layers, cross_epochs)
+    cross_loss, cross_acc = model.evaluate(val_cross_x, val_cross_y)
+    
+    results.append(cross_acc)
+  return results
+
+
 def plotGridResults(n_epochs, n_hiddenlayers, accuracy, filename):
     accuracy = np.array(accuracy)
     accuracy=accuracy.reshape(len(n_epochs), len(n_hiddenlayers))
@@ -58,7 +88,9 @@ if __name__ == '__main__':
    
     testMultipleParams = False
 
-    testSignificance = True
+    testSignificance = False
+
+    crossValidate = True
 
     testOptimizationFrameworks = False
 
@@ -90,31 +122,6 @@ if __name__ == '__main__':
     X_train = X_train / 255.0
     X_test = X_test / 255.0
     
-    if testSignificance:
-
-          
-        text_file = open("statistical_significance.txt", "w")
-
-        for i in range (0, 10):
-        
-        #num_classes = 10
-        #y_train = np_utils.to_categorical(y_train, num_classes)
-        #y_test = np_utils.to_categorical(y_test, num_classes)
-
-            model = TrainModel(X_train, y_train, 200, 30)
-            #optimizer = tf.train.AdagradOptimizer(learning_rate=0.001)    
-            #model = TrainModelOptimizer(X_train, y_train, 128, 5, optimizer)
-
-            # check accuracy
-            test_loss, test_acc = model.evaluate(X_test, y_test)
-            print('Test accuracy:', test_acc)
-            text_file.write("%.3f\n" % test_acc)
-
-        text_file.close()
-    #predictions = model.predict(X_test)    
-    #likeliestPred = np.argmax(predictions[0])   #most likely prediction
-    #print('First item is most likely:', np.argmax(predictions[0]))
-
     if testMultipleParams:
 
         # grid search for a suitable parameter for the hidden layers and epochs
@@ -293,3 +300,63 @@ if __name__ == '__main__':
          fig.show()
          fig.savefig('Optimizers_learningrate.png')
          
+    if testSignificance:
+                  
+        text_file = open("statistical_significance.txt", "w")
+
+        for i in range (0, 10):
+        
+        #num_classes = 10
+        #y_train = np_utils.to_categorical(y_train, num_classes)
+        #y_test = np_utils.to_categorical(y_test, num_classes)
+
+            model = TrainModel(X_train, y_train, 200, 30)
+            #optimizer = tf.train.AdagradOptimizer(learning_rate=0.001)    
+            #model = TrainModelOptimizer(X_train, y_train, 128, 5, optimizer)
+
+            # check accuracy
+            test_loss, test_acc = model.evaluate(X_test, y_test)
+            print('Test accuracy:', test_acc)
+            text_file.write("%.3f\n" % test_acc)
+
+        text_file.close()
+        #predictions = model.predict(X_test)    
+        #likeliestPred = np.argmax(predictions[0])   #most likely prediction
+        #print('First item is most likely:', np.argmax(predictions[0]))
+
+    if cross_validate:
+        text_file = open("cross_validate.txt", "w")
+
+        folds = 5
+        result = []
+
+        hls = np.array([10, 20, 30, 40, 50, 100, 150, 200])
+        #eps = np.array([5, 6, 7])
+
+        for hl in hls:
+            #for ep in eps:
+                with tf.Session() as session:
+                  result.append(cross_validate(session, X_train, y_train, hl, 30, split_size=folds))
+        
+        result = np.reshape(result, ( len(hls), folds))
+        np.savetxt("crossvalidation_result.csv", result, delimiter=",")
+
+        mean = np.mean(result, axis = 1)
+        std = np.std(result, axis = 1)
+       
+        fig, ax = plt.subplots()
+        ax.bar(range(len(hls)), mean, yerr=std, align='center', alpha=0.5, ecolor='black', capsize=10)
+        ax.set_ylabel('Accuracy')
+        ax.set_xticks(range(len(hls)))
+        ax.set_xticklabels(hls)
+        ax.set_title('Confidence intervals')
+        ax.yaxis.grid(True)
+
+        # Save the figure and show
+        plt.tight_layout()
+        plt.savefig('bar_plot_with_error_bars.png')
+        plt.show()   
+
+        #print('Test accuracy: %f' % session.run(accuracy, feed_dict={x: test_x, y: test_y}))
+
+        text_file.close()
