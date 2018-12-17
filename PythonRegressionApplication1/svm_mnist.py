@@ -5,36 +5,55 @@ from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
 from sklearn import datasets, svm, metrics
 
+import sys
+sys.path.append("./utils/")
+sys.path.append("./data/")
+
+from utils import mnist_reader
+
 def main():
 
   train_test = False
-  train_RBF = False
+  train_RBF = True
   train_linear = False
-  train_polynomial = True
+  train_polynomial = False
 
-  digits = datasets.load_digits()
-  images_and_labels = list(zip(digits.images, digits.target))
+  X_train, y_train = mnist_reader.load_mnist('data/fashion', kind='train')
+  X_test, y_test = mnist_reader.load_mnist('data/fashion', kind='t10k')
 
-  import matplotlib.pyplot as plt
-  for index, (image, label) in enumerate(images_and_labels[:4]):
-    plt.subplot(2, 4, index + 1)
-    plt.axis('off')
-    plt.imshow(image, cmap=plt.cm.gray_r, interpolation='nearest')
-    plt.title('Training: %i' % label)
+  X_train = X_train[:1200]
+  y_train = y_train[:1200]
+  X_test = X_test[:1200]
+  y_test = y_test[:1200]
 
-  n_samples = len(digits.images)
-  data = digits.images.reshape((n_samples, -1))
+  X_train=X_train/255.0
+  X_test=X_test/255.0
 
-  X = data
-  y = digits.target
 
-  from sklearn.model_selection import train_test_split
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
+  #import matplotlib.pyplot as plt
+
+  #plt.figure()
+  #plt.imshow(np.reshape(X_train[0], (28, 28)))
+  #plt.colorbar()
+  #plt.grid(False)
+  #plt.savefig('firstimageFashion.png')
+    
+  #fig = plt.figure()
+  #for i in range(16):
+  #      plt.subplot(4,4,i+1)
+  #      plt.tight_layout()
+  #      plt.imshow(np.reshape(X_train[i], (28, 28)), cmap='gray', interpolation='none')
+  #      plt.title("Label: {}".format(y_train[i]))
+  #      plt.xticks([])
+  #      plt.yticks([])
+  #fig
+  #plt.savefig('exampleFashionImages.png')
+  #plt.show()
 
   model = svm.SVC(gamma=0.001)
-  #learn digits
+  #learn
   model.fit(X_train,y_train)
-  #predict value of digits
+  #predict 
   expected = y_test
   predicted = model.predict(X_test)
 
@@ -42,14 +61,6 @@ def main():
         % (model, metrics.classification_report(expected, predicted)))
   print("Confusion matrix:\n%s" % metrics.confusion_matrix(expected, predicted))
   print("Accuracy={}".format(metrics.accuracy_score(expected, predicted)))
-
-  images_and_predictions = list(zip(digits.images[X_train.shape[0]:], predicted))
-  for index, (image, prediction) in enumerate(images_and_predictions[:4]):
-    plt.subplot(2, 4, index + 5)
-    plt.axis('off')
-    plt.imshow(image, cmap=plt.cm.gray_r, interpolation='nearest')
-    plt.title('Prediction: %i' % prediction)
-  plt.show()
       
   if train_test:
       #create model svm
@@ -70,8 +81,8 @@ def main():
 
   if train_RBF:
       import matplotlib.pyplot as plt
-      #C_s, gamma_s = np.meshgrid(np.logspace(-2.5, -0.5, 15), np.logspace(-5,-2, 15))
-      C_s, gamma_s = np.meshgrid(np.logspace(-2.5, 0, 15), np.logspace(-5,-2, 15))
+
+      C_s, gamma_s = np.meshgrid(np.logspace(-2.5, -0.5, 15), np.logspace(-5,-2, 15))
       scores = list()
       i = 0
       j = 0
@@ -85,7 +96,7 @@ def main():
         this_scores = cross_val_score(model, X_train, y_train, cv=5, n_jobs=1)
         scores.append(np.mean(this_scores))
       
-      out_file = open('Scores_rbf', 'w')
+      out_file = open('Scores_rbf_fashion', 'w')
       for i in range(0, 10):
           out_file.write('\n%.5f,\n' % gamma_s[i, 0])  
           for j in range(0, 10):
@@ -95,15 +106,16 @@ def main():
                     
       scores = np.array(scores)
       scores = scores.reshape(C_s.shape)
+      #scores = scores.reshape(len(C_s),len(gamma_s))
 
       fig2, ax2 = plt.subplots(figsize=(12,8))
-      c = ax2.contourf(C_s,gamma_s,scores,np.arange(0.1, 1.0, .05))
+      c = ax2.contourf(C_s,gamma_s,scores,np.arange(0.1, 1.05, .025))
       ax2.set_xlabel('C')
       ax2.set_ylabel('gamma')
       bounds=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
       fig2.colorbar(c, boundaries=bounds, ticks=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0])
       fig2.show()
-      fig2.savefig('RBF.png')
+      fig2.savefig('RBF_fashion.png')
   
   if train_linear:
 
@@ -148,7 +160,7 @@ def main():
       import matplotlib.pyplot as plt
 
       #C_s, gamma_s = np.meshgrid(np.logspace(-5, -1, 10), np.logspace(-3, -1, 10))
-      C_s, gamma_s = np.meshgrid(np.logspace(-3, 0, 10), np.logspace(-4, -3.7, 10))
+      C_s, gamma_s = np.meshgrid(np.logspace(-3, 0, 3), np.logspace(-4, -3.7, 3))
       scores = list()
       i = 0
       j = 0
@@ -164,12 +176,12 @@ def main():
         scores.append(np.mean(this_scores))
       
 
-      out_file = open('Scores_poly', 'w')
-      for i in range(0, 10):
+      out_file = open('Scores_poly_fashion', 'w')
+      for i in range(0, 3):
           out_file.write('\n%.5f,\n' % gamma_s[i, 0])  
-          for j in range(0, 10):
+          for j in range(0, 3):
               out_file.write('%.5f,' % C_s[0, j])
-              out_file.write('%.3f,' % scores[i*10 + j])
+              out_file.write('%.3f,' % scores[i*3 + j])
       out_file.close()
 
       scores = np.array(scores)
@@ -181,9 +193,10 @@ def main():
       ax3.set_xlabel('C')
       ax3.set_ylabel('gamma')
       bounds=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
-      fig3.colorbar(c, boundaries=bounds, ticks=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0])
+      #norm = colors.BoundaryNorm(bounds, cmap.N)
+      fig3.colorbar(c)#, boundaries=bounds,ticks=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0])
       fig3.show()
-      fig3.savefig('POLY.png')
+      fig3.savefig('POLY_fashion.png')
 
 
 if __name__ == '__main__':
