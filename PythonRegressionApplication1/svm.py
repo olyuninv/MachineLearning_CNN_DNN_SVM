@@ -70,8 +70,8 @@ def main():
 
   if train_RBF:
       import matplotlib.pyplot as plt
-
-      C_s, gamma_s = np.meshgrid(np.logspace(-2.5, -0.5, 15), np.logspace(-5,-2, 15))
+      #C_s, gamma_s = np.meshgrid(np.logspace(-2.5, -0.5, 15), np.logspace(-5,-2, 15))
+      C_s, gamma_s = np.meshgrid(np.logspace(-2.5, 0, 15), np.logspace(-5,-2, 15))
       scores = list()
       i = 0
       j = 0
@@ -95,13 +95,13 @@ def main():
                     
       scores = np.array(scores)
       scores = scores.reshape(C_s.shape)
-      #scores = scores.reshape(len(C_s),len(gamma_s))
 
       fig2, ax2 = plt.subplots(figsize=(12,8))
-      c = ax2.contourf(C_s,gamma_s,scores,10)
+      c = ax2.contourf(C_s,gamma_s,scores,np.arange(0.1, 1.0, .05))
       ax2.set_xlabel('C')
       ax2.set_ylabel('gamma')
-      fig2.colorbar(c,ticks=[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9])
+      bounds=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+      fig2.colorbar(c, boundaries=bounds, ticks=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0])
       fig2.show()
       fig2.savefig('RBF.png')
   
@@ -181,9 +181,7 @@ def main():
       ax3.set_xlabel('C')
       ax3.set_ylabel('gamma')
       bounds=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
-      #norm = colors.BoundaryNorm(bounds, cmap.N)
-      fig3.colorbar(c)#, boundaries=bounds,ticks=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0])
-
+      fig3.colorbar(c, boundaries=bounds, ticks=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0])
       fig3.show()
       fig3.savefig('POLY.png')
 
