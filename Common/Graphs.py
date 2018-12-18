@@ -41,6 +41,7 @@ class Graphs():
        fig2, ax2 = plt.subplots(figsize=(12,8))
        c=ax2.contourf(firstAxis,secondAxis,metricData)
        ax2.set_xlabel(axis1Name)
+       ax2.set_yscale("log", nonposy='clip')
        ax2.set_ylabel(axis2Name)
        fig2.colorbar(c)
        fig2.savefig('%s.png' % metric)

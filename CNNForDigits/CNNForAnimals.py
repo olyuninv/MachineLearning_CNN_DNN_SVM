@@ -1,5 +1,4 @@
-import tensorflow as tf
-
+#import tensorflow as tf
 #from tensorflow import keras
 from keras import layers 
 from keras import models 
@@ -12,7 +11,6 @@ from keras.utils import to_categorical
 
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.model_selection import KFold
 import os
 import time
 
@@ -46,7 +44,7 @@ def TrainModelOptimizer(train_generator, validation_generator, number_of_hidden_
     model.add(layers.Dense(128, activation='relu'))        
     model.add(layers.Dense(3, activation='softmax'))
         
-    #model.summary()
+    model.summary()
 
     model.compile( 
               #optimizer=tf.train.RMSPropOptimizer(learning_rate=1e-4), 
@@ -63,27 +61,6 @@ def TrainModelOptimizer(train_generator, validation_generator, number_of_hidden_
     validation_steps=50) 	
 
     return model
-
-def cross_validate(session, train_datagen, validation_datagen, test_datagen, train_x_all, train_y_all, X_test, y_test, cross_hidden_layers, cross_epochs, split_size=5):
-    results = []
-    kf = KFold(n_splits=split_size)
-    for train_idx, val_idx in kf.split(train_x_all, train_y_all):
-        train_cross_x = train_x_all[train_idx]
-        train_cross_y = train_y_all[train_idx]
-        val_cross_x = train_x_all[val_idx]
-        val_cross_y = train_y_all[val_idx]
-
-        # connect ImageDataGenerator and 
-        train_generator = train_datagen.flow(train_cross_x, train_cross_y, batch_size=32, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
-        validation_generator = validation_datagen.flow(val_cross_x, val_cross_y, batch_size=32, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
-        test_generator = test_datagen.flow(X_test, y_test, batch_size=32, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
-
-        model = TrainModel(train_generator, validation_generator, cross_hidden_layers, cross_epochs)
-        cross_loss, cross_acc = model.evaluate_generator(test_generator, steps=100)
-    
-        results.append(cross_acc)
-
-    return results
 
 def plotGridResults(n_epochs, n_hiddenlayers, accuracy, filename):
     accuracy = np.array(accuracy)
@@ -102,11 +79,10 @@ if __name__ == '__main__':
     loadData = True
     trainSingleNetwork = False
     testMultipleParams1 = False
-    testMultipleParams2 = False
+    testMultipleParams2 = True
     plotResults = False
-    crossvalidateResults = True
 
-    sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
+    #sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
 
     if loadData:
         label_dict = {
@@ -187,14 +163,13 @@ if __name__ == '__main__':
 
         validation_datagen = ImageDataGenerator(rescale=1./255) 
         test_datagen = ImageDataGenerator(rescale=1./255) 
-           
-    if trainSingleNetwork:
-
+    
         # connect ImageDataGenerator and 
         train_generator = train_datagen.flow(X_train, y_train, batch_size=batch_size, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
         validation_generator = validation_datagen.flow(X_valid, y_valid, batch_size=batch_size, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
         test_generator = test_datagen.flow(X_test, y_test, batch_size=batch_size, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
 
+    if trainSingleNetwork:
         model = TrainModel(train_generator, validation_generator, 20, 5)
         results = model.evaluate_generator(test_generator, steps=1000)  
         print('Final test loss:', (results[0]*100.0))
@@ -210,11 +185,6 @@ if __name__ == '__main__':
     
     if testMultipleParams1:
 
-        # connect ImageDataGenerator and 
-        train_generator = train_datagen.flow(X_train, y_train, batch_size=batch_size, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
-        validation_generator = validation_datagen.flow(X_valid, y_valid, batch_size=batch_size, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
-        test_generator = test_datagen.flow(X_test, y_test, batch_size=batch_size, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
-
         # grid search for a suitable parameter for the hidden layers and epochs
         number_of_hidden_layers = np.array([10, 20, 30, 40, 50, 100, 150, 200])
         number_of_epochs = np.array([30]) #, 1, 2, 3, 4, 5, 10, 20])
@@ -223,7 +193,7 @@ if __name__ == '__main__':
         accuracies = list()
         timings  = list()
 
-        text_file = open("Output_Animals1.txt", "a") #"w")
+        text_file = open("Output_Animals.txt", "a") #"w")
 
         # for the text file - print number of layers first - as we are making a table
         #text_file.write('Number of hidden layers: ')
@@ -272,107 +242,4 @@ if __name__ == '__main__':
         #plotGridResults (number_of_epochs, number_of_hidden_layers, timings, 'GridSearch__animals_timings.png')
  
     if plotResults:
-        #Graphs.plotGridResults ('Number of hidden layers', 'Number of epochs', '../CNNForDigits/Output_Animals1.csv', 'accuracy')
-        Graphs.plotGridResults ('Batch size', 'Learning rate', '../CNNForDigits/Output_Animals2.csv', 'accuracy2')
-
-    if testMultipleParams2:
-        
-        # grid search for a suitable parameter for the learning rate and batch size
-        learning_rate = np.array([0.00001]) #0.01, 0.001, 0.0001, ])
-        batch_sizes = np.array([4, 8, 16, 32, 64]) #, 128])
-
-        losses = list()
-        accuracies = list()
-        timings  = list()
-
-        text_file = open("Output_Animals2.txt", "a") #"w")
-
-        # for the text file - print header
-        #text_file.write('Batchsize:,')
-        #for j in batch_sizes:
-        #    text_file.write('%i_Timing(s),%i_Loss,%i_Accuracy,' % j)
-
-        for i in learning_rate:        
-            text_file.write('\nLearningRate:%.5f,' % i)
-
-            for j in batch_sizes:
-                print('Learning rate:%.5f' % i) 
-                print('Batch size:%i' % j)   
-                
-                # connect ImageDataGenerator and 
-                train_generator = train_datagen.flow(X_train, y_train, batch_size=j, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
-                validation_generator = validation_datagen.flow(X_valid, y_valid, batch_size=j, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
-                test_generator = test_datagen.flow(X_test, y_test, batch_size=j, shuffle=True, sample_weight=None, seed=None, save_to_dir=None, save_prefix='', save_format='png', subset=None)
-                
-                setOptimizer = optimizers.Adam(lr=i)
-
-                # time training 
-                time1 = time.time()
-                model = TrainModelOptimizer(train_generator, validation_generator, 124, 30, setOptimizer)
-                time2 = time.time()
-                time_span = time2-time1
-                timings.append(time_span)
-                print('Training the model took: %s seconds' % time_span)
-                text_file.write("%.3f," % time_span)
-
-                # check accuracy
-                results = model.evaluate_generator(test_generator, steps=100) 
-                test_loss = results[0] * 100
-                test_acc = results[1] * 100
-                losses.append(test_loss)
-                text_file.write("%.3f," % test_loss)
-                accuracies.append(test_acc)
-                text_file.write("%.3f," % test_acc)
-
-                print('Test accuracy:', test_acc)
-                fileName = "./models/model_%.5flr_%ibatchSize.h5" % (i, j)
-        
-                exists = os.path.isfile(fileName)
-                if exists:
-                    os.remove(fileName)
-        
-                model.save(fileName) 
-                gc.collect()
-                    
-        text_file.close()
-
-    if crossvalidateResults:
-        text_file = open("cross_validate_animals.txt", "w")
-
-        X_train_cross = np.concatenate((X_train, X_valid), axis=0)
-        y_train_cross = np.concatenate((y_train, y_valid), axis=0)
-
-        folds = 5
-        result = []
-
-        hls = np.array([10, 20, 30, 40, 50, 100, 150, 200])
-        #eps = np.array([5, 6, 7])
-
-        for hl in hls:
-            #for ep in eps:
-                with tf.Session() as session:
-                  result.append(cross_validate(session, train_datagen, validation_datagen, test_datagen, X_train_cross, y_train_cross, X_test, y_test, hl, 20, split_size=folds))
-        
-        result = np.reshape(result, ( len(hls), folds))
-        np.savetxt("crossvalidation_result.csv", result, delimiter=",")
-
-        mean = np.mean(result, axis = 1)
-        std = np.std(result, axis = 1)
-       
-        fig, ax = plt.subplots()
-        ax.bar(range(len(hls)), mean, yerr=std, align='center', alpha=0.5, ecolor='black', capsize=10)
-        ax.set_ylabel('Accuracy')
-        ax.set_xticks(range(len(hls)))
-        ax.set_xticklabels(hls)
-        ax.set_title('Hidden layers')
-        ax.yaxis.grid(True)
-
-        # Save the figure and show
-        plt.tight_layout()
-        plt.savefig('bar_plot_error_animals.png')
-        plt.show()   
-
-        #print('Test accuracy: %f' % session.run(accuracy, feed_dict={x: test_x, y: test_y}))
-
-        text_file.close()
-       
+        Graphs.plotGridResults ('Number of hidden layers', 'Number of epochs', '../CNNForDigits/Output_Animals1.csv', 'accuracy')
