@@ -1,4 +1,5 @@
 import numpy as np
+import itertools
 import matplotlib.pyplot as plt
 
 from sklearn.model_selection import train_test_split
@@ -8,9 +9,10 @@ from sklearn import datasets, svm, metrics
 def main():
 
   train_test = False
-  train_RBF = False
+  train_RBF = True
   train_linear = False
   train_polynomial = True
+  train_polynomial_degrees = False
 
   digits = datasets.load_digits()
   images_and_labels = list(zip(digits.images, digits.target))
@@ -31,7 +33,11 @@ def main():
   from sklearn.model_selection import train_test_split
   X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
 
-  model = svm.SVC(gamma=0.001)
+  #model = svm.SVC(C=1,gamma=0.0001) #0.98
+  #model = svm.SVC(C=1,gamma=0.18)
+  model = svm.SVC(C=1, gamma=0.01)
+  #model = svm.SVC(C=1,gamma=0.0032)
+  #model = svm.SVC(C=1, kernel='linear')
   #learn digits
   model.fit(X_train,y_train)
   #predict value of digits
@@ -40,8 +46,11 @@ def main():
 
   print("Classification report for classifier %s:\n%s\n"
         % (model, metrics.classification_report(expected, predicted)))
-  print("Confusion matrix:\n%s" % metrics.confusion_matrix(expected, predicted))
+  conf_mat = metrics.confusion_matrix(expected, predicted)
+  print("Confusion matrix:\n%s" % conf_mat)
   print("Accuracy={}".format(metrics.accuracy_score(expected, predicted)))
+
+  
 
   images_and_predictions = list(zip(digits.images[X_train.shape[0]:], predicted))
   for index, (image, prediction) in enumerate(images_and_predictions[:4]):
@@ -49,6 +58,24 @@ def main():
     plt.axis('off')
     plt.imshow(image, cmap=plt.cm.gray_r, interpolation='nearest')
     plt.title('Prediction: %i' % prediction)
+  plt.show()
+
+  # Plot Confusion Matrix Data as a Matrix
+  import matplotlib.pyplot as plt
+  conf_mat = conf_mat.astype('float') / conf_mat.sum(axis=1)[:, np.newaxis]
+  plt.figure(1, figsize=(7, 3), dpi=160)
+  plt.imshow(conf_mat, interpolation='nearest', cmap=plt.cm.Blues)
+  plt.title('Confusion matrix')
+  plt.colorbar()
+  fmt = '.2f'
+  thresh = conf_mat.max() / 2.
+  for i, j in itertools.product(range(conf_mat.shape[0]), range(conf_mat.shape[1])):
+        plt.text(j, i, format(conf_mat[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if conf_mat[i, j] > thresh else "black")
+  plt.ylabel('True label')
+  plt.xlabel('Predicted label')  
+  plt.savefig("mnist_conf_matrix.png")
   plt.show()
       
   if train_test:
@@ -131,7 +158,8 @@ def main():
   
   if train_linear:
 
-      model = svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
+      #model = svm.SVC(C=1.0, cache_size=200, class_weight=None, coef0=0.0,
+      model = svm.SVC(C=0.01, cache_size=200, class_weight=None, coef0=0.0,
         decision_function_shape='ovr', gamma='auto', kernel='linear',
         max_iter=-1, probability=False, random_state=None, shrinking=True,
         tol=0.001, verbose=False)
@@ -206,7 +234,7 @@ def main():
       #confidence interval
       data_barchart = np.reshape(data_barchart, ( 10*10, 5))
       #data_barchart=data_barchart[:10]
-      data_barchart=data_barchart[50:60]
+      data_barchart=data_barchart[60:69]
       np.savetxt("crossvalidation_result_mnist.csv", scores, delimiter=",")
 
       mean = np.mean(data_barchart, axis = 1)
@@ -222,9 +250,10 @@ def main():
       # Save the figure and show
       plt.tight_layout()
       plt.savefig('bar_error_mnist_poly.png')
-      plt.show()   
-
+      plt.show()
       
+      print(data_barchart[60,:])#????
+
       
       fig3, ax3 = plt.subplots(figsize=(12,8))
       #c = ax3.contourf(C_s,gamma_s,scores,np.arange(0.95, 1.0, .005))
@@ -236,6 +265,38 @@ def main():
       fig3.show()
       fig3.savefig('POLY.png')
 
+  if train_polynomial_degrees:
+    scores = list()
+    degrees=list(range(1,10))
+    for i in range(0,len(degrees)):
+        model = svm.SVC(C=1, degree=i, gamma=0.00032, kernel='poly')
+        this_scores = cross_val_score(model, X_train, y_train, cv=5, n_jobs=1)
+        scores.append(np.mean(this_scores))
+
+
+
+    # importing the required module 
+    import matplotlib.pyplot as plt 
+  
+    # x axis values 
+    x = scores
+    # corresponding y axis values 
+    y = degrees
+  
+    # plotting the points  
+    plt.plot(x, y) 
+  
+    # naming the x axis 
+    plt.xlabel('Accuracy') 
+    # naming the y axis 
+    plt.ylabel('Polynomial degrees') 
+  
+    # giving a title to my graph 
+    plt.title('Hyperparameter degree - Polynomial kernel') 
+  
+    # function to show the plot 
+    plt.savefig('mnist_degrees.png')
+    plt.show() 
 
 if __name__ == '__main__':
   main()

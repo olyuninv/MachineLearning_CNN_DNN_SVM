@@ -15,22 +15,23 @@ from utils import mnist_reader
 def main():
 
   train_test = False
-  train_RBF = True
+  train_RBF = False
   train_linear = False
-  train_polynomial = False
+  train_polynomial = True
+  train_polynomial_degrees = False
 
   X_train, y_train = mnist_reader.load_mnist('data/fashion', kind='train')
   X_test, y_test = mnist_reader.load_mnist('data/fashion', kind='t10k')
 
-  X_train = X_train[:1200]
-  y_train = y_train[:1200]
-  X_test = X_test[:1200]
-  y_test = y_test[:1200]
+  #X_train = X_train[:1200]
+  #y_train = y_train[:1200]
+  #X_test = X_test[:1200]
+  #y_test = y_test[:1200]
 
-  #X_train = X_train[:10000]
-  #y_train = y_train[:10000]
-  #X_test = X_test[:10000]
-  #y_test = y_test[:10000]
+  X_train = X_train[:10000]
+  y_train = y_train[:10000]
+  X_test = X_test[:10000]
+  y_test = y_test[:10000]
 
   X_train=X_train/255.0
   X_test=X_test/255.0
@@ -59,9 +60,10 @@ def main():
   #model = svm.SVC(gamma=0.001)
   #model = svm.SVC(gamma=0.001)
   #model =svm.SVC(C=10, gamma=0.001) #accuracy 0.81
-  model =svm.SVC(C=10)  #accuracy 0.81
+  #model =svm.SVC(C=10)  #accuracy 0.81
   #model = svm.SVC(C=1,gamma=0.1, kernel='poly') #0.7683 accuracy
   #model = svm.SVC(gamma=0.0001, kernel='poly') #0.0975 accuracy
+  model =svm.SVC(C=0.01,kernel='linear')
   #learn
   model.fit(X_train,y_train)
   #predict 
@@ -202,7 +204,8 @@ def main():
       #C_s, gamma_s = np.meshgrid(np.logspace(-3, 0, 3), np.logspace(-4, -3.7, 3))
       #C_s, gamma_s = np.meshgrid(np.logspace(-9, 7, 3), np.logspace(-7, 0, 3))
       #C_s, gamma_s = np.meshgrid(np.logspace(-12, 7, 3), np.logspace(-10, 0, 3))
-      C_s, gamma_s = np.meshgrid(np.logspace(-15, 10, 3), np.logspace(-13, 2, 3))
+      #C_s, gamma_s = np.meshgrid(np.logspace(-15, 10, 3), np.logspace(-13, 2, 3)) #best so far
+      C_s, gamma_s = np.meshgrid(np.logspace(-16, 10, 10), np.logspace(-16, 5, 10))
       scores = list()
       i = 0
       j = 0
@@ -219,11 +222,11 @@ def main():
       
 
       out_file = open('Scores_poly_fashion', 'w')
-      for i in range(0, 3):
+      for i in range(0, 10):
           out_file.write('\n%.5f,\n' % gamma_s[i, 0])  
-          for j in range(0, 3):
+          for j in range(0, 10):
               out_file.write('%.5f,' % C_s[0, j])
-              out_file.write('%.3f,' % scores[i*3 + j])
+              out_file.write('%.3f,' % scores[i*10 + j])
       out_file.close()
 
       scores = np.array(scores)
@@ -239,6 +242,39 @@ def main():
       fig3.colorbar(c)#, boundaries=bounds,ticks=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0])
       fig3.show()
       fig3.savefig('POLY_fashion.png')
+
+  if train_polynomial_degrees:
+    scores = list()
+    degrees=list(range(1,10))
+    for i in range(0,len(degrees)):
+        model = svm.SVC(C=1, degree=i, gamma=0.1, kernel='poly')
+        this_scores = cross_val_score(model, X_train, y_train, cv=5, n_jobs=1)
+        scores.append(np.mean(this_scores))
+
+
+
+    # importing the required module 
+    import matplotlib.pyplot as plt 
+  
+    # x axis values 
+    x = scores
+    # corresponding y axis values 
+    y = degrees
+  
+    # plotting the points  
+    plt.plot(x, y) 
+  
+    # naming the x axis 
+    plt.xlabel('Accuracy') 
+    # naming the y axis 
+    plt.ylabel('Polynomial degrees') 
+  
+    # giving a title to my graph 
+    plt.title('Hyperparameter degree - Polynomial kernel') 
+  
+    # function to show the plot 
+    plt.savefig('fashion_mnist_degrees.png')
+    plt.show() 
 
 
 if __name__ == '__main__':
