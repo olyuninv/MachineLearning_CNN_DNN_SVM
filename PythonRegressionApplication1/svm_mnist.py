@@ -83,7 +83,7 @@ def main():
                  color="white" if conf_mat[i, j] > thresh else "black")
   plt.ylabel('True label')
   plt.xlabel('Predicted label')  
-  plt.savefig("fashion_conf_matrix2.png")
+  plt.savefig("fashion_conf_matrix.png")
   plt.show()
       
   if train_test:

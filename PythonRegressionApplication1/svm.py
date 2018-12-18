@@ -75,6 +75,8 @@ def main():
       scores = list()
       i = 0
       j = 0
+      data_barchart = []
+
       for C_param, gamma_param in zip(C_s.ravel(),gamma_s.ravel()):
         model.C = C_param
         model.gamma = gamma_param
@@ -83,6 +85,7 @@ def main():
             decision_function_shape='ovr', degree=3, gamma=gamma_param, kernel='rbf',
             max_iter=-1, probability=False)
         this_scores = cross_val_score(model, X_train, y_train, cv=5, n_jobs=1)
+        data_barchart.append(this_scores)
         scores.append(np.mean(this_scores))
       
       out_file = open('Scores_rbf', 'w')
@@ -96,8 +99,29 @@ def main():
       scores = np.array(scores)
       scores = scores.reshape(C_s.shape)
 
+      #confidence interval
+      data_barchart = np.reshape(data_barchart, ( 15*15, 5))
+      #data_barchart=data_barchart[:10]
+      data_barchart=data_barchart[50:60]
+      np.savetxt("crossvalidation_result_mnist.csv", scores, delimiter=",")
+
+      mean = np.mean(data_barchart, axis = 1)
+      std = np.std(data_barchart, axis = 1)
+       
+      fig, ax = plt.subplots()
+      ax.bar(range(10), mean, yerr=std, align='center', alpha=0.5, ecolor='black', capsize=10)
+      ax.set_ylabel('Accuracy')
+      ax.set_xticks(range(len(data_barchart)))
+      ax.set_xticklabels(['a','b','c','c','c','c','c','c','c','c'])
+      ax.set_title('C')
+      ax.yaxis.grid(True)
+      # Save the figure and show
+      plt.tight_layout()
+      plt.savefig('bar_error_mnist_rbf.png')
+      plt.show()   
+
       fig2, ax2 = plt.subplots(figsize=(12,8))
-      c = ax2.contourf(C_s,gamma_s,scores,np.arange(0.1, 1.0, .05))
+      c = ax2.contourf(C_s,gamma_s,scores,np.arange(0.0, 1.1, .1))
       ax2.set_xlabel('C')
       ax2.set_ylabel('gamma')
       bounds=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
@@ -148,10 +172,14 @@ def main():
       import matplotlib.pyplot as plt
 
       #C_s, gamma_s = np.meshgrid(np.logspace(-5, -1, 10), np.logspace(-3, -1, 10))
-      C_s, gamma_s = np.meshgrid(np.logspace(-3, 0, 10), np.logspace(-4, -3.7, 10))
+      #C_s, gamma_s = np.meshgrid(np.logspace(-4, 0, 10), np.logspace(-4.2, -3.7, 10))
+      C_s, gamma_s = np.meshgrid(np.logspace(-6, 2, 10), np.logspace(-6, -1, 10))
       scores = list()
       i = 0
       j = 0
+
+      data_barchart = []
+
       for C_param, gamma_param in zip(C_s.ravel(),gamma_s.ravel()):
         model.C = C_param
         model.gamma = gamma_param
@@ -161,9 +189,9 @@ def main():
             max_iter=-1, probability=False, random_state=None, shrinking=True,
             tol=0.001, verbose=False)
         this_scores = cross_val_score(model, X_train, y_train, cv=5, n_jobs=1)
+        data_barchart.append(this_scores)
         scores.append(np.mean(this_scores))
       
-
       out_file = open('Scores_poly', 'w')
       for i in range(0, 10):
           out_file.write('\n%.5f,\n' % gamma_s[i, 0])  
@@ -171,13 +199,52 @@ def main():
               out_file.write('%.5f,' % C_s[0, j])
               out_file.write('%.3f,' % scores[i*10 + j])
       out_file.close()
-
+          
       scores = np.array(scores)
       scores = scores.reshape(C_s.shape)
+
+      #confidence interval
+      data_barchart = np.reshape(data_barchart, ( 10*10, 5))
+      #data_barchart=data_barchart[:10]
+      data_barchart=data_barchart[50:60]
+      np.savetxt("crossvalidation_result_mnist.csv", scores, delimiter=",")
+
+      mean = np.mean(data_barchart, axis = 1)
+      std = np.std(data_barchart, axis = 1)
+       
+      fig, ax = plt.subplots()
+      ax.bar(range(10), mean, yerr=std, align='center', alpha=0.5, ecolor='black', capsize=10)
+      ax.set_ylabel('Accuracy')
+      ax.set_xticks(range(len(data_barchart)))
+      ax.set_xticklabels(['a','b','c','c','c','c','c','c','c','c'])
+      ax.set_title('C')
+      ax.yaxis.grid(True)
+      # Save the figure and show
+      plt.tight_layout()
+      plt.savefig('bar_error_mnist_poly.png')
+      plt.show()   
+
+      #gamma graph
+
+      mean = scores.mean(axis=1)
+      std = scores.std(axis=1)
+       
+      fig, ax = plt.subplots()
+      ax.bar(range(10), mean, yerr=std, align='center', alpha=0.5, ecolor='black', capsize=10)
+      ax.set_ylabel('Accuracy')
+      ax.set_xticks(range(10))
+      ax.set_xticklabels(['a','b','c','c','c','c','c','c','c','c'])
+      ax.set_title('C')
+      ax.yaxis.grid(True)
+
+      # Save the figure and show
+      plt.tight_layout()
+      plt.savefig('bar_error_mnist_poly.png')
+      plt.show()   
       
       fig3, ax3 = plt.subplots(figsize=(12,8))
       #c = ax3.contourf(C_s,gamma_s,scores,np.arange(0.95, 1.0, .005))
-      c = ax3.contourf(C_s,gamma_s,scores,np.arange(0.1, 1.05, .025))
+      c = ax3.contourf(C_s,gamma_s,scores,np.arange(0.0, 1.05, .05))
       ax3.set_xlabel('C')
       ax3.set_ylabel('gamma')
       bounds=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
