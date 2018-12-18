@@ -12,6 +12,8 @@ from sklearn.model_selection import KFold
 import time
 import math
 
+from tempfile import TemporaryFile
+
 def LoadMNISTImages(folder, testOrTraining):
 
     mndata = MNIST(folder)
@@ -90,7 +92,7 @@ if __name__ == '__main__':
 
     testSignificance = False
 
-    crossValidate = True
+    crossValidate = False
 
     testOptimizationFrameworks = False
 
@@ -101,27 +103,91 @@ if __name__ == '__main__':
                 '5', '6', '7', '8', '9']
 
     #plt.ion()
-    plt.figure()
-    plt.imshow(X_train[0])
-    plt.colorbar()
-    plt.grid(False)
-    plt.savefig('firstimageScale.png')
+    #plt.figure()
+    #plt.imshow(X_train[0])
+    #plt.colorbar()
+    #plt.grid(False)
+    #plt.savefig('firstimageScale.png')
     
-    fig = plt.figure()
-    for i in range(16):
-        plt.subplot(4,4,i+1)
-        plt.tight_layout()
-        plt.imshow(X_train[i], cmap='gray', interpolation='none')
-        plt.title("Digit: {}".format(y_train[i]))
-        plt.xticks([])
-        plt.yticks([])
-    fig
-    plt.savefig('exampleImages.png')
+    #fig = plt.figure()
+    #for i in range(16):
+    #    plt.subplot(4,4,i+1)
+    #    plt.tight_layout()
+    #    plt.imshow(X_train[i], cmap='gray', interpolation='none')
+    #    plt.title("Digit: {}".format(y_train[i]))
+    #    plt.xticks([])
+    #    plt.yticks([])
+    #fig
+    #plt.savefig('exampleImages.png')
 
     #normalise data
     X_train = X_train / 255.0
     X_test = X_test / 255.0
     
+    ##### TEST GAN
+
+    model1 = TrainModel(X_train, y_train, 200, 30)
+    test_loss, test_acc = model1.evaluate(X_test, y_test)
+    print('Accuracy on test model:%.4f' % test_acc)
+
+    lr = np.array(['0.0002beta']) #['0.1', '0.02', '0.002', '0.0002', '0.00002'])    
+    ep = np.array(['1','30','50'])
+    beta = np.array(['0.1','0.3','0.7','0.9'])
+    bt = np.array(['4','16','64','256'])
+    opt = np.array(['Adagrad','AdamSGD','GDO','RMSProp','SGD'])
+
+    result = list()
+
+    #for lr_counter in lr:
+    #for lr_counter in beta:
+    for lr_counter in lr:
+        for ep_counter in ep:
+
+            fName = '../GeneratedData_LearningRate_Variance/MNIST_cDCGAN_results_lr' + lr_counter + '/Epoch'+ ep_counter + '.npy'
+            #fName = '../Generated_For_Classification_Batc/MNIST_cDCGAN_results_batch' + lr_counter + '/Epoch'+ ep_counter + '.npy'
+            #fName = '../GeneratedDataForClassifier_Optimizer/MNIST_cDCGAN_results_' + lr_counter + '/Epoch'+ ep_counter + '.npy'
+
+            #dataGAN = np.load('../GeneratedData_LearningRate_Variance/MNIST_cDCGAN_results_standard_lr_0.0002_momentum_0.5_batch_100_Adam/Epoch1.npy')
+            dataGAN = np.load(fName)
+   
+            for i in range (10):
+                X_gan = dataGAN[100 * i :  100 * i + 100 :]
+                y_gan = np.empty(100)
+                y_gan.fill(i)
+
+                X_gan = X_gan + 1.0
+                X_gan = X_gan /2.0
+                #np.reshape(X_gan, -1)
+                X_gan = np.reshape(np.ravel(X_gan), (100, 28, 28))
+
+                #fig = plt.figure()
+                #for i_plt in range(16):
+                #    plt.subplot(4,4,i_plt+1)
+                #    plt.tight_layout()
+                #    plt.imshow(np.reshape(X_gan[i_plt], (28, 28)), cmap='gray')  #X_gan[i_plt], cmap='gray', interpolation='none')
+                #    plt.title("Digit: {}".format(y_gan[i_plt]))
+                #    plt.xticks([])
+                #    plt.yticks([])
+                #fig                
+                #plt.savefig('./GANTest/GeneratedData_LearningRate_Variance/exampleImagesGAN_lr' + lr_counter + 'ep' + ep_counter + '_' + str(i) + '.png')
+                ##plt.show()
+
+                test_loss, test_acc = model1.evaluate(X_gan, y_gan)
+                result.append(test_acc)
+
+    result = np.asarray(result)
+    result = np.reshape(result, (len(lr) * len(ep), 10))
+    np.save('./GANTest/GeneratedData_LearningRate_Variance/test_result_beta.npy', result)
+    np.savetxt("./GANTest/GeneratedData_LearningRate_Variance/test_result_beta.csv", result, delimiter=",")
+    
+
+    #saver = tf.train.Saver()     
+    
+    #exists = os.path.isfile(fileName)
+    #if exists:
+    #       os.remove(fileName)
+    #save_path = saver.save(sess,'./models/mnist_2.ckpt') 
+
     if testMultipleParams:
 
         # grid search for a suitable parameter for the hidden layers and epochs
@@ -325,8 +391,7 @@ if __name__ == '__main__':
         #print('First item is most likely:', np.argmax(predictions[0]))
 
     if cross_validate:
-        text_file = open("cross_validate.txt", "w")
-
+       
         folds = 5
         result = []
 
@@ -336,10 +401,10 @@ if __name__ == '__main__':
         for hl in hls:
             #for ep in eps:
                 with tf.Session() as session:
-                  result.append(cross_validate(session, X_train, y_train, hl, 30, split_size=folds))
+                  result.append(cross_validate(session, X_train, y_train, hl, 10, split_size=folds))
         
         result = np.reshape(result, ( len(hls), folds))
-        np.savetxt("crossvalidation_result.csv", result, delimiter=",")
+        np.savetxt("crossvalidation_result_animals.csv", result, delimiter=",")
 
         mean = np.mean(result, axis = 1)
         std = np.std(result, axis = 1)
@@ -359,4 +424,3 @@ if __name__ == '__main__':
 
         #print('Test accuracy: %f' % session.run(accuracy, feed_dict={x: test_x, y: test_y}))
 
-        text_file.close()
