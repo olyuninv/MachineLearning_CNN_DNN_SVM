@@ -224,23 +224,7 @@ def main():
       plt.savefig('bar_error_mnist_poly.png')
       plt.show()   
 
-      #gamma graph
-
-      mean = scores.mean(axis=1)
-      std = scores.std(axis=1)
-       
-      fig, ax = plt.subplots()
-      ax.bar(range(10), mean, yerr=std, align='center', alpha=0.5, ecolor='black', capsize=10)
-      ax.set_ylabel('Accuracy')
-      ax.set_xticks(range(10))
-      ax.set_xticklabels(['a','b','c','c','c','c','c','c','c','c'])
-      ax.set_title('C')
-      ax.yaxis.grid(True)
-
-      # Save the figure and show
-      plt.tight_layout()
-      plt.savefig('bar_error_mnist_poly.png')
-      plt.show()   
+      
       
       fig3, ax3 = plt.subplots(figsize=(12,8))
       #c = ax3.contourf(C_s,gamma_s,scores,np.arange(0.95, 1.0, .005))

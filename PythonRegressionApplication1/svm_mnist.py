@@ -15,8 +15,8 @@ from utils import mnist_reader
 def main():
 
   train_test = False
-  train_RBF = False
-  train_linear = True
+  train_RBF = True
+  train_linear = False
   train_polynomial = False
 
   X_train, y_train = mnist_reader.load_mnist('data/fashion', kind='train')
@@ -116,7 +116,8 @@ def main():
       #C_s, gamma_s = np.meshgrid(np.logspace(-2.5, -0.5, 15), np.logspace(-5,-2, 15))
       #C_s, gamma_s = np.meshgrid(np.logspace(-0.5, 1.5, 15), np.logspace(-5,-2, 15))
       #C_s, gamma_s = np.meshgrid(np.logspace(0, 3, 10), np.logspace(-5,-2, 10))
-      C_s, gamma_s = np.meshgrid(np.logspace(-2, 3, 10), np.logspace(-7,-2, 10))
+      #C_s, gamma_s = np.meshgrid(np.logspace(-2, 3, 10), np.logspace(-7,-2, 10))
+      C_s, gamma_s = np.meshgrid(np.logspace(-4, 1, 10), np.logspace(-9,-4, 10))
 
       scores = list()
       i = 0
@@ -143,7 +144,7 @@ def main():
       scores = scores.reshape(C_s.shape)
 
       fig2, ax2 = plt.subplots(figsize=(12,8))
-      c = ax2.contourf(C_s,gamma_s,scores,np.arange(0.1, 1.0, .05))
+      c = ax2.contourf(C_s,gamma_s,scores,np.arange(0.0, 1.05, .05))
       ax2.set_xlabel('C')
       ax2.set_ylabel('gamma')
       bounds=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
