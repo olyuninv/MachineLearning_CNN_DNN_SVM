@@ -16,8 +16,8 @@ def main():
 
   train_test = False
   train_RBF = False
-  train_linear = False
-  train_polynomial = True
+  train_linear = True
+  train_polynomial = False
 
   X_train, y_train = mnist_reader.load_mnist('data/fashion', kind='train')
   X_test, y_test = mnist_reader.load_mnist('data/fashion', kind='t10k')
@@ -26,6 +26,11 @@ def main():
   y_train = y_train[:1200]
   X_test = X_test[:1200]
   y_test = y_test[:1200]
+
+  #X_train = X_train[:10000]
+  #y_train = y_train[:10000]
+  #X_test = X_test[:10000]
+  #y_test = y_test[:10000]
 
   X_train=X_train/255.0
   X_test=X_test/255.0
@@ -53,8 +58,10 @@ def main():
 
   #model = svm.SVC(gamma=0.001)
   #model = svm.SVC(gamma=0.001)
-  #model =svm.SVC(C=10)
-  model = svm.SVC(gamma=0.1, kernel='poly')
+  #model =svm.SVC(C=10, gamma=0.001) #accuracy 0.81
+  model =svm.SVC(C=10)  #accuracy 0.81
+  #model = svm.SVC(C=1,gamma=0.1, kernel='poly') #0.7683 accuracy
+  #model = svm.SVC(gamma=0.0001, kernel='poly') #0.0975 accuracy
   #learn
   model.fit(X_train,y_train)
   #predict 
@@ -157,10 +164,13 @@ def main():
       y_result = model.predict(X_test)
 
       target_names = ['class 0', 'class 1', 'class 2', 'class 3', 'class 4', 'class 5', 'class 6', 'class 7', 'class 8', 'class 9']
-      print(classification_report(y_test, y_result, target_names=target_names))
+      print(metrics.classification_report(y_test, y_result, target_names=target_names))
+
+      print("Accuracy={}".format(metrics.accuracy_score(expected, predicted)))
 
 
-      C_s = np.logspace(-8, -2, 10)
+      #C_s = np.logspace(-8, -2, 10)
+      C_s = np.logspace(-8, 0, 10)
 
       scores = list()
       scores_std = list()
@@ -181,6 +191,7 @@ def main():
       plt.ylabel('CV score')
       plt.xlabel('Parameter C')
       plt.ylim(0, 1.1)
+      plt.savefig('fashion_linear.png')
       plt.show()
 
   if train_polynomial:
@@ -188,7 +199,9 @@ def main():
 
       #C_s, gamma_s = np.meshgrid(np.logspace(-5, -1, 10), np.logspace(-3, -1, 10))
       #C_s, gamma_s = np.meshgrid(np.logspace(-3, 0, 3), np.logspace(-4, -3.7, 3))
-      C_s, gamma_s = np.meshgrid(np.logspace(-7, 7, 3), np.logspace(-7, 7, 3))
+      #C_s, gamma_s = np.meshgrid(np.logspace(-9, 7, 3), np.logspace(-7, 0, 3))
+      #C_s, gamma_s = np.meshgrid(np.logspace(-12, 7, 3), np.logspace(-10, 0, 3))
+      C_s, gamma_s = np.meshgrid(np.logspace(-15, 10, 3), np.logspace(-13, 2, 3))
       scores = list()
       i = 0
       j = 0
@@ -217,7 +230,7 @@ def main():
       
       fig3, ax3 = plt.subplots(figsize=(12,8))
       #c = ax3.contourf(C_s,gamma_s,scores,np.arange(0.95, 1.0, .005))
-      c = ax3.contourf(C_s,gamma_s,scores,np.arange(0.1, 1.05, .025))
+      c = ax3.contourf(C_s,gamma_s,scores,np.arange(0.0, 1.025, .025))
       ax3.set_xlabel('C')
       ax3.set_ylabel('gamma')
       bounds=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
