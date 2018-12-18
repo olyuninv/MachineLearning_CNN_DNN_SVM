@@ -1,4 +1,5 @@
 import numpy as np
+import itertools
 import matplotlib.pyplot as plt
 
 from sklearn.model_selection import train_test_split
@@ -14,9 +15,9 @@ from utils import mnist_reader
 def main():
 
   train_test = False
-  train_RBF = True
+  train_RBF = False
   train_linear = False
-  train_polynomial = False
+  train_polynomial = True
 
   X_train, y_train = mnist_reader.load_mnist('data/fashion', kind='train')
   X_test, y_test = mnist_reader.load_mnist('data/fashion', kind='t10k')
@@ -50,7 +51,10 @@ def main():
   #plt.savefig('exampleFashionImages.png')
   #plt.show()
 
-  model = svm.SVC(gamma=0.001)
+  #model = svm.SVC(gamma=0.001)
+  #model = svm.SVC(gamma=0.001)
+  #model =svm.SVC(C=10)
+  model = svm.SVC(gamma=0.1, kernel='poly')
   #learn
   model.fit(X_train,y_train)
   #predict 
@@ -59,8 +63,28 @@ def main():
 
   print("Classification report for classifier %s:\n%s\n"
         % (model, metrics.classification_report(expected, predicted)))
-  print("Confusion matrix:\n%s" % metrics.confusion_matrix(expected, predicted))
+  conf_mat = metrics.confusion_matrix(expected, predicted)
+  print("Confusion matrix:\n%s" % conf_mat)
+  #print("Confusion matrix:\n%s" % metrics.confusion_matrix(expected, predicted))
   print("Accuracy={}".format(metrics.accuracy_score(expected, predicted)))
+
+  # Plot Confusion Matrix Data as a Matrix
+  import matplotlib.pyplot as plt
+  conf_mat = conf_mat.astype('float') / conf_mat.sum(axis=1)[:, np.newaxis]
+  plt.figure(1, figsize=(7, 3), dpi=160)
+  plt.imshow(conf_mat, interpolation='nearest', cmap=plt.cm.Blues)
+  plt.title('Confusion matrix')
+  plt.colorbar()
+  fmt = '.2f'
+  thresh = conf_mat.max() / 2.
+  for i, j in itertools.product(range(conf_mat.shape[0]), range(conf_mat.shape[1])):
+        plt.text(j, i, format(conf_mat[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if conf_mat[i, j] > thresh else "black")
+  plt.ylabel('True label')
+  plt.xlabel('Predicted label')  
+  plt.savefig("fashion_conf_matrix2.png")
+  plt.show()
       
   if train_test:
       #create model svm
@@ -82,7 +106,11 @@ def main():
   if train_RBF:
       import matplotlib.pyplot as plt
 
-      C_s, gamma_s = np.meshgrid(np.logspace(-2.5, -0.5, 15), np.logspace(-5,-2, 15))
+      #C_s, gamma_s = np.meshgrid(np.logspace(-2.5, -0.5, 15), np.logspace(-5,-2, 15))
+      #C_s, gamma_s = np.meshgrid(np.logspace(-0.5, 1.5, 15), np.logspace(-5,-2, 15))
+      #C_s, gamma_s = np.meshgrid(np.logspace(0, 3, 10), np.logspace(-5,-2, 10))
+      C_s, gamma_s = np.meshgrid(np.logspace(-2, 3, 10), np.logspace(-7,-2, 10))
+
       scores = list()
       i = 0
       j = 0
@@ -97,19 +125,18 @@ def main():
         scores.append(np.mean(this_scores))
       
       out_file = open('Scores_rbf_fashion', 'w')
-      for i in range(0, 10):
+      for i in range(0, 3):
           out_file.write('\n%.5f,\n' % gamma_s[i, 0])  
-          for j in range(0, 10):
+          for j in range(0, 3):
               out_file.write('%.5f,' % C_s[0, j])
-              out_file.write('%.3f,' % scores[i*10 + j])
+              out_file.write('%.3f,' % scores[i*3 + j])
       out_file.close()
                     
       scores = np.array(scores)
       scores = scores.reshape(C_s.shape)
-      #scores = scores.reshape(len(C_s),len(gamma_s))
 
       fig2, ax2 = plt.subplots(figsize=(12,8))
-      c = ax2.contourf(C_s,gamma_s,scores,np.arange(0.1, 1.05, .025))
+      c = ax2.contourf(C_s,gamma_s,scores,np.arange(0.1, 1.0, .05))
       ax2.set_xlabel('C')
       ax2.set_ylabel('gamma')
       bounds=[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
@@ -160,7 +187,8 @@ def main():
       import matplotlib.pyplot as plt
 
       #C_s, gamma_s = np.meshgrid(np.logspace(-5, -1, 10), np.logspace(-3, -1, 10))
-      C_s, gamma_s = np.meshgrid(np.logspace(-3, 0, 3), np.logspace(-4, -3.7, 3))
+      #C_s, gamma_s = np.meshgrid(np.logspace(-3, 0, 3), np.logspace(-4, -3.7, 3))
+      C_s, gamma_s = np.meshgrid(np.logspace(-7, 7, 3), np.logspace(-7, 7, 3))
       scores = list()
       i = 0
       j = 0
