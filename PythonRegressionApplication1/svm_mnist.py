@@ -17,21 +17,21 @@ def main():
   train_test = False
   train_RBF = False
   train_linear = False
-  train_polynomial = True
-  train_polynomial_degrees = False
+  train_polynomial = False
+  train_polynomial_degrees = True
 
   X_train, y_train = mnist_reader.load_mnist('data/fashion', kind='train')
   X_test, y_test = mnist_reader.load_mnist('data/fashion', kind='t10k')
 
-  #X_train = X_train[:1200]
-  #y_train = y_train[:1200]
-  #X_test = X_test[:1200]
-  #y_test = y_test[:1200]
+  X_train = X_train[:1200]
+  y_train = y_train[:1200]
+  X_test = X_test[:1200]
+  y_test = y_test[:1200]
 
-  X_train = X_train[:10000]
-  y_train = y_train[:10000]
-  X_test = X_test[:10000]
-  y_test = y_test[:10000]
+  #X_train = X_train[:10000]
+  #y_train = y_train[:10000]
+  #X_test = X_test[:10000]
+  #y_test = y_test[:10000]
 
   X_train=X_train/255.0
   X_test=X_test/255.0
@@ -251,28 +251,17 @@ def main():
         this_scores = cross_val_score(model, X_train, y_train, cv=5, n_jobs=1)
         scores.append(np.mean(this_scores))
 
-
-
     # importing the required module 
     import matplotlib.pyplot as plt 
   
-    # x axis values 
-    x = scores
-    # corresponding y axis values 
-    y = degrees
-  
-    # plotting the points  
+    x = degrees
+    y = scores 
     plt.plot(x, y) 
-  
-    # naming the x axis 
-    plt.xlabel('Accuracy') 
-    # naming the y axis 
-    plt.ylabel('Polynomial degrees') 
-  
-    # giving a title to my graph 
+
+    plt.xlabel('Polynomial degrees') 
+    plt.ylabel('Accuracy') 
+ 
     plt.title('Hyperparameter degree - Polynomial kernel') 
-  
-    # function to show the plot 
     plt.savefig('fashion_mnist_degrees.png')
     plt.show() 
 

@@ -1,6 +1,7 @@
 import numpy as np
 import itertools
 import matplotlib.pyplot as plt
+from PIL import Image
 
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
@@ -11,7 +12,7 @@ def main():
   train_test = False
   train_RBF = True
   train_linear = False
-  train_polynomial = True
+  train_polynomial = False
   train_polynomial_degrees = False
 
   digits = datasets.load_digits()
@@ -35,9 +36,10 @@ def main():
 
   #model = svm.SVC(C=1,gamma=0.0001) #0.98
   #model = svm.SVC(C=1,gamma=0.18)
-  model = svm.SVC(C=1, gamma=0.01)
+  model = svm.SVC(C=1, gamma=0.001)
   #model = svm.SVC(C=1,gamma=0.0032)
   #model = svm.SVC(C=1, kernel='linear')
+
   #learn digits
   model.fit(X_train,y_train)
   #predict value of digits
@@ -49,8 +51,6 @@ def main():
   conf_mat = metrics.confusion_matrix(expected, predicted)
   print("Confusion matrix:\n%s" % conf_mat)
   print("Accuracy={}".format(metrics.accuracy_score(expected, predicted)))
-
-  
 
   images_and_predictions = list(zip(digits.images[X_train.shape[0]:], predicted))
   for index, (image, prediction) in enumerate(images_and_predictions[:4]):
@@ -98,7 +98,7 @@ def main():
   if train_RBF:
       import matplotlib.pyplot as plt
       #C_s, gamma_s = np.meshgrid(np.logspace(-2.5, -0.5, 15), np.logspace(-5,-2, 15))
-      C_s, gamma_s = np.meshgrid(np.logspace(-2.5, 0, 15), np.logspace(-5,-2, 15))
+      C_s, gamma_s = np.meshgrid(np.logspace(-2.5, 0, 10), np.logspace(-5,-2, 10))
       scores = list()
       i = 0
       j = 0
@@ -127,9 +127,9 @@ def main():
       scores = scores.reshape(C_s.shape)
 
       #confidence interval
-      data_barchart = np.reshape(data_barchart, ( 15*15, 5))
-      #data_barchart=data_barchart[:10]
-      data_barchart=data_barchart[50:60]
+      data_barchart = np.reshape(data_barchart, ( 10*10, 5))
+      data_barchart=data_barchart[:10]
+      #data_barchart=data_barchart[50:60]
       np.savetxt("crossvalidation_result_mnist.csv", scores, delimiter=",")
 
       mean = np.mean(data_barchart, axis = 1)
@@ -139,7 +139,7 @@ def main():
       ax.bar(range(10), mean, yerr=std, align='center', alpha=0.5, ecolor='black', capsize=10)
       ax.set_ylabel('Accuracy')
       ax.set_xticks(range(len(data_barchart)))
-      ax.set_xticklabels(['a','b','c','c','c','c','c','c','c','c'])
+      ax.set_xticklabels(['0.0031','0.0059','0.0113','0.0215','0.0408','0.0774','0.1467','0.2782','0.5274','1.'])
       ax.set_title('C')
       ax.yaxis.grid(True)
       # Save the figure and show
@@ -254,7 +254,6 @@ def main():
       
       print(data_barchart[60,:])#????
 
-      
       fig3, ax3 = plt.subplots(figsize=(12,8))
       #c = ax3.contourf(C_s,gamma_s,scores,np.arange(0.95, 1.0, .005))
       c = ax3.contourf(C_s,gamma_s,scores,np.arange(0.0, 1.05, .05))
@@ -273,28 +272,18 @@ def main():
         this_scores = cross_val_score(model, X_train, y_train, cv=5, n_jobs=1)
         scores.append(np.mean(this_scores))
 
-
-
     # importing the required module 
     import matplotlib.pyplot as plt 
   
-    # x axis values 
-    x = scores
-    # corresponding y axis values 
-    y = degrees
-  
-    # plotting the points  
+    x = degrees
+    y = scores 
     plt.plot(x, y) 
   
-    # naming the x axis 
-    plt.xlabel('Accuracy') 
-    # naming the y axis 
-    plt.ylabel('Polynomial degrees') 
+    # naming the x,y axis 
+    plt.xlabel('Polynomial degrees')  
+    plt.ylabel('Accuracy')
   
-    # giving a title to my graph 
     plt.title('Hyperparameter degree - Polynomial kernel') 
-  
-    # function to show the plot 
     plt.savefig('mnist_degrees.png')
     plt.show() 
 
